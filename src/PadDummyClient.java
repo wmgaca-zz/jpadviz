@@ -1,4 +1,4 @@
-import lib.ServerConfig;
+import lib.config.ServerConfig;
 import lib.Utils;
 import lib.types.ClientType;
 import lib.types.packages.EndPackage;

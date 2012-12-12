@@ -1,17 +1,13 @@
-import lib.JavaPaintUI;
+import lib.ui.JavaPaintUI;
 import lib.Utils;
 import lib.types.*;
 
-import java.awt.*;
 import java.io.*;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 import lib.forms.MainWindowForm;
-import lib.types.Label;
 import lib.types.packages.*;
 import lib.types.packages.Package;
-import org.omg.CORBA.PRIVATE_MEMBER;
 
 import javax.swing.*;
 

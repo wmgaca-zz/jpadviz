@@ -1,8 +1,8 @@
 import java.io.*;
 import java.net.*;
 
-import lib.ConnectionHandler;
-import lib.ServerConfig;
+import lib.net.ConnectionHandler;
+import lib.config.ServerConfig;
 import lib.Utils;
 
 public class PadServer {

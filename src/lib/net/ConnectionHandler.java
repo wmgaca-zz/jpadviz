@@ -1,4 +1,4 @@
-package lib;
+package lib.net;
 
 import java.io.*;
 import java.net.Socket;

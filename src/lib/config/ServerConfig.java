@@ -1,4 +1,4 @@
-package lib;
+package lib.config;
 
 import java.io.File;
 
