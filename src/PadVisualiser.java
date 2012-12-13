@@ -1,15 +1,14 @@
-import lib.ui.JavaPaintUI;
 import lib.Utils;
-import lib.types.*;
-
-import java.io.*;
-import java.net.Socket;
-
 import lib.forms.MainWindowForm;
+import lib.types.ClientType;
+import lib.types.LabelConfig;
 import lib.types.packages.*;
 import lib.types.packages.Package;
+import lib.ui.JavaPaintUI;
 
 import javax.swing.*;
+import java.io.*;
+import java.net.Socket;
 
 public class PadVisualiser {
 

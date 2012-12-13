@@ -1,13 +1,14 @@
 package lib.types;
 
+import lib.Utils;
+import lib.config.ConfigHandler;
+import lib.types.exceptions.PADConfigException;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import lib.config.ConfigHandler;
-import lib.Utils;
-import lib.types.exceptions.PADConfigException;
 
 public class LabelConfig {
 

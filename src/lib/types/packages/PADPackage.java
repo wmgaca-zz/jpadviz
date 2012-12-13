@@ -1,7 +1,5 @@
 package lib.types.packages;
 
-import java.util.Random;
-
 import lib.Utils;
 import lib.types.PADState;
 import lib.types.PackageType;

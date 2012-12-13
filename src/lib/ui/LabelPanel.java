@@ -1,7 +1,9 @@
 package lib.ui;
 
-import lib.types.*;
 import lib.types.Label;
+import lib.types.LabelConfig;
+import lib.types.PADState;
+import lib.types.Palette;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;

@@ -5,7 +5,7 @@ import lib.types.PAD;
 import lib.types.PADState;
 
 import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.util.ArrayList;
 

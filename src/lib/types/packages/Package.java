@@ -1,6 +1,7 @@
 package lib.types.packages;
 
 import lib.types.PackageType;
+
 import java.io.Serializable;
 
 public abstract class Package implements Serializable {

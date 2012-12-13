@@ -1,7 +1,5 @@
 package lib.ui;
 
-import javax.swing.*;
-
 public class PanelUpdater implements Runnable {
     BasicPanel panel;
 

@@ -1,14 +1,16 @@
 package lib.net;
 
-import java.io.*;
+import lib.types.ClientType;
+import lib.types.packages.*;
+import lib.types.packages.Package;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
-
-import lib.types.*;
-import lib.types.packages.*;
-import lib.types.packages.Package;
 public class ConnectionHandler implements Runnable {
 
     private static List<ConnectionHandler> connectionHandlers = new ArrayList<ConnectionHandler>();
