@@ -29,12 +29,42 @@ public class LabelConfig {
         }
 
         for (int i = 0; i < labelNodes.getLength(); ++i) {
-            this.labels.add(Label.fromNode(labelNodes.item(0)));
+            this.labels.add(Label.fromNode(labelNodes.item(i)));
         }
     }
 
     public List<Label> getLabels() {
         return this.labels;
+    }
+
+    public Label getMatchingLabel(PADState state) {
+        List<Label> matching = new ArrayList<Label>();
+
+        for (Label label : this.labels) {
+              if (label.match(state)) {
+                  matching.add(label);
+              }
+        }
+
+        if (0 == matching.size()) {
+            return new Label("Empty");
+        }
+
+        Label result = null;
+        float distance = 0;
+        for (Label label : matching) {
+            if (null == result) {
+                result = label;
+                distance = label.calculateDistance(state);
+            } else {
+                if (distance > label.calculateDistance(state)) {
+                    result = label;
+                    distance = label.calculateDistance(state);
+                }
+            }
+        }
+
+        return result;
     }
 
 }

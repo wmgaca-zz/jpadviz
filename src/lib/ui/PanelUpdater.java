@@ -3,25 +3,34 @@ package lib.ui;
 import javax.swing.*;
 
 public class PanelUpdater implements Runnable {
-    JPanel panel;
+    BasicPanel panel;
 
-    PanelUpdater(JPanel panel) {
+    // In miliseconds
+    int refreshRate = 100;
+
+    PanelUpdater(BasicPanel panel, int refreshRate) {
+        this(panel);
+
+        this.refreshRate = refreshRate;
+    }
+
+    PanelUpdater(BasicPanel panel) {
         this.panel = panel;
     }
 
     public void run() {
         while (true) {
-            this.panel.repaint();
+            System.out.println("Tick for repaint: " + panel.toString());
+            panel.repaint();
             try {
-                Thread.sleep(100);
+                Thread.sleep(refreshRate);
             } catch (InterruptedException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e.printStackTrace();
             }
-            System.out.println("Tick...");
         }
     }
 
-    public static void handle(JPanel panel) {
+    public static void handle(BasicPanel panel) {
         Thread thread = new Thread(new PanelUpdater(panel));
         thread.start();
     }

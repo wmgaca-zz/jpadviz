@@ -1,5 +1,10 @@
 package lib;
 
+import lib.types.PADState;
+import lib.types.SinglePADValue;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 public class Utils {
@@ -30,6 +35,25 @@ public class Utils {
         }
 
         return Utils.randomGenerator;
+    }
+
+    public static float abs(float a) {
+        if (a < 0) {
+            return -1f * a;
+        }
+        return a;
+    }
+
+    public static ArrayList<SinglePADValue> reverseSPVList(ArrayList<SinglePADValue> list) {
+        ArrayList<SinglePADValue> reversed = new ArrayList<SinglePADValue>(list);
+        Collections.reverse(reversed);
+        return reversed;
+    }
+
+    public static ArrayList<PADState> reversePSList(ArrayList<PADState> list) {
+        ArrayList<PADState> reversed = new ArrayList<PADState>(list);
+        Collections.reverse(reversed);
+        return reversed;
     }
 
 }

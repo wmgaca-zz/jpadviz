@@ -1,5 +1,6 @@
 package lib.types;
 
+import lib.Utils;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -24,9 +25,7 @@ public class Label {
     public Label(String name) {
         this();
 
-        if (name != null) {
-            this.name = name;
-        }
+        this.name = name;
     }
 
     public Label(String name, float pMin, float pMax, float aMin, float aMax, float dMin, float dMax) {
@@ -94,6 +93,10 @@ public class Label {
         this.dMin = Float.parseFloat(value);
     }
 
+    public String getName() {
+        return this.name;
+    }
+
     private static String getAttrFromNode(Node attrNode, String attrName) {
         if (!attrNode.hasAttributes()) {
             return null;
@@ -124,6 +127,26 @@ public class Label {
         }
 
         return label;
+    }
+
+    public boolean match(PADState state) {
+        if (state.getP() > this.pMax || state.getP() < this.pMin) {
+            return false;
+        } else if (state.getA() > this.aMax || state.getA() < this.aMin) {
+            return false;
+        } else if (state.getD() > this.dMax || state.getD() < this.dMin) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public float calculateDistance(PADState state) {
+        float centerP = this.pMin + (this.pMax - this.pMin) / 2;
+        float centerA = this.pMin + (this.aMax - this.aMin) / 2;
+        float centerD = this.pMin + (this.dMax - this.dMin) / 2;
+
+        return Utils.abs(state.getP() - centerP) + Utils.abs(state.getA() - centerA) + Utils.abs(state.getD() - centerD);
     }
 
 }

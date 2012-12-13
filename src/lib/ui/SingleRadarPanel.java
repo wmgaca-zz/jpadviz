@@ -1,82 +1,69 @@
 package lib.ui;
 
+import lib.types.PAD;
 import lib.types.Palette;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 
-public class SingleRadarPanel extends JPanel {
+public class SingleRadarPanel extends BasicSinglePanel {
 
-    private float value = 0f;
-    private float certainty = 0f;
+    private float currentArcStart = 90f;
+    private int arcLen = 360;
 
-    private String label;
-
-    private int currentArcStart = 90;
-    private int arcLen = 10;
-
-    SingleRadarPanel() {
-        this.label = "Unknown";
-        this.setPreferredSize(new Dimension(400, 400));
+    SingleRadarPanel(PAD.Type type, int width, int height) {
+        super(type, width, height);
 
         PanelUpdater.handle(this);
     }
 
-    SingleRadarPanel(String label, int width, int height) {
-        this();
-        this.label = label;
-        this.setPreferredSize(new Dimension(width, height));
+    protected int getRadius() {
+        return (getW() < getH()) ? getW() / 2 : getH() /2;
     }
 
-    public void feed(float value, float certainty) {
-        this.value = value;
-        this.certainty = certainty;
+    protected void drawArc(int arcStart, int arcLen, Graphics2D g2d, Color color, float stroke) {
+        Arc2D arc = new Arc2D.Double(getCenterX() - getRadius(), getCenterY() - getRadius(),
+                                     2f * getRadius(), 2f * getRadius(),
+                                     arcStart, arcLen, Arc2D.PIE);
+
+        g2d.setColor(color);
+        g2d.setStroke(new BasicStroke(stroke));
+
+        g2d.draw(arc);
+    }
+
+    protected void drawCircle(Graphics2D g2d, Color color) {
+        Ellipse2D circle = new Ellipse2D.Double(getCenterX() - getRadius(), getCenterY() - getRadius(),
+                                                2f * getRadius(), 2f * getRadius());
+
+        g2d.setColor(color);
+        g2d.fill(circle);
+
+        g2d.draw(circle);
+
     }
 
     @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
+    public void customPaintComponent(Graphics2D g2d) {
+        int len = values.size();
+        if (0 == len) {
+            return;
+        }
 
-        Graphics2D g2d = (Graphics2D)g;
+        float value = values.get(len - 1).value;
+        float certainty = values.get(len - 1).certainty;
 
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                             RenderingHints.VALUE_ANTIALIAS_ON);
+        drawCircle(g2d, Palette.getTransparent((value > 0) ? Palette.green : Palette.red, certainty));
 
-        int left = 10;
-        int right = 10;
-        int top = 10;
-        int bottom = 10;
-
-        int width = this.getWidth() - left - right;
-        int height = this.getHeight() - top - bottom;
-
-        int centerX = left + width / 2;
-        int centerY = top + height / 2;
-
-        int radius = (width < height) ? width / 2 : height /2;
-
-        Ellipse2D circle = new Ellipse2D.Double(centerX - radius, centerY - radius, 2f * radius, 2f * radius);
-        Color color = (this.value > 0) ? Palette.green : Palette.red;
-        g2d.setColor(Palette.getTransparent(color, this.certainty));
-        g2d.fill(circle);
-        g2d.draw(circle);
-
-        g.setColor(Palette.grey);
-        g2d.setStroke(new BasicStroke(5f));
-
-        int arcSpeed = (int) (-10 * this.value);
-
-        this.currentArcStart = (this.currentArcStart + arcSpeed) % 360;
-
-        Arc2D arc = new Arc2D.Double(centerX - radius, centerY - radius, width, height, this.currentArcStart, this.arcLen, Arc2D.OPEN);
-        g2d.draw(arc);
+        float arcSpeed = -10 * value;
+        currentArcStart = (currentArcStart + arcSpeed) % 360;
+        drawArc((int)currentArcStart, arcLen, g2d, Palette.grey, 5f);
 
         // Draw the value
         g2d.setColor(Palette.black);
-        String s = String.format("%s: %.2f (%.2f)", this.label, this.value, this.certainty);
+        String s = String.format("%s: %.2f (%.2f)", this.label, value, certainty);
         int sLen = (int)g2d.getFontMetrics().getStringBounds(s, g2d).getWidth();
-        g.drawString(s, centerX - sLen / 2, centerY);
+        g2d.drawString(s, getCenterX() - sLen / 2, getCenterY());
     }
 }

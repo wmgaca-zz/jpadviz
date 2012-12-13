@@ -38,7 +38,6 @@ public class PadVisualiser {
 
     public PadVisualiser(LabelConfig labelConfig) {
         this.labelConfig = labelConfig;
-
     }
 
     public void setupNetworking() {
@@ -118,9 +117,8 @@ public class PadVisualiser {
 
     private void initUI() {
 
-        this.frame = new JavaPaintUI();
+        this.frame = new JavaPaintUI(this.labelConfig);
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         this.frame.setVisible(true);
 
         /*
@@ -145,11 +143,11 @@ public class PadVisualiser {
     private void updateUI() {
         try {
 
-            PADPackage data = PADPackage.getRandom();
+            this.frame.feed(PADPackage.getRandom().getState());
 
-            this.frame.feed(data.getState().getP(),
-                            data.getState().getCA());
-            Thread.sleep(1000);
+            Thread.sleep(Utils.getRandomGenerator().nextInt(2500) + 500);
+
+            System.out.println("UpdateUI!");
         } catch (InterruptedException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
