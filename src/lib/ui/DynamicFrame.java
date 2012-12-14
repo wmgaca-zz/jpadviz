@@ -9,7 +9,7 @@ import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class JavaPaintUI extends JFrame {
+public class DynamicFrame extends JFrame {
 
     private JPanel container;
     private ArrayList<BasicPanel> panels = new ArrayList<BasicPanel>();
@@ -24,13 +24,13 @@ public class JavaPaintUI extends JFrame {
         container.repaint();
     }
 
-    public JavaPaintUI(LabelConfig labelConfig) {
+    public DynamicFrame(LabelConfig labelConfig) {
         this.labelConfig = labelConfig;
 
         this.initComponents();
     }
 
-    private void addToContaner(BasicPanel panel) {
+    private void addToContainer(BasicPanel panel) {
         panels.add(panel);
         container.add(panel);
     }
@@ -39,13 +39,11 @@ public class JavaPaintUI extends JFrame {
         // we want a custom Panel2, not a generic JPanel!
         //this.panel = new SinglePADPanel("P", 300, 200);
 
-        this.setSize(new Dimension(800, 600));
-
         container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.X_AXIS));
-        addToContaner(new SinglePADPanel(PAD.Type.P, 400, 400));
-        addToContaner(new LabelPanel(400, 200, labelConfig));
-        addToContaner(new SingleRadarPanel(PAD.Type.P, 400, 400));
+        addToContainer(new SinglePADPanel(PAD.Type.P, 400, 400));
+        addToContainer(new LabelPanel(400, 200, labelConfig));
+        addToContainer(new SingleRadarPanel(PAD.Type.P, 400, 400));
         container.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 
         this.setContentPane(container);

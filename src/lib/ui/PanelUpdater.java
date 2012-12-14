@@ -18,7 +18,7 @@ public class PanelUpdater implements Runnable {
 
     public void run() {
         while (true) {
-            System.out.println("Tick for repaint: " + panel.toString());
+            //System.out.println("Tick for repaint: " + panel.toString());
             panel.repaint();
             try {
                 Thread.sleep(refreshRate);

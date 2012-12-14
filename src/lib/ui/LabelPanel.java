@@ -1,5 +1,6 @@
 package lib.ui;
 
+import lib.Utils;
 import lib.types.Label;
 import lib.types.LabelConfig;
 import lib.types.PADState;
@@ -29,18 +30,12 @@ public class LabelPanel extends BasicMultiplePanel {
             return;
         }
 
-        long firstTime = this.values.get(0).getTimestamp();
-        long lastTime = this.values.get(len - 1).getTimestamp();
+        long endTime = System.currentTimeMillis();
+        long startTime = endTime - buffer * 1000;
 
-        long timespan = this.values.get(len - 1).getTimestamp();
-        if (len > 1) {
-            timespan -= this.values.get(0).getTimestamp();
-        }
-
-        // Draw X & Y lines
+        // Draw bottom Y line
         g2d.setColor(Palette.black);
-        g2d.drawLine(margin.left, margin.top + getH(), this.getWidth() - margin.right, margin.top + getH());
-        g2d.drawLine(margin.left, this.getHeight() - margin.bottom, margin.left, margin.top);
+        g2d.drawLine(margin.left, margin.top + getH(), getWidth() - margin.right, margin.top + getH());
 
         PADState last = this.values.get(len - 1);
         // Draw the value
@@ -48,6 +43,28 @@ public class LabelPanel extends BasicMultiplePanel {
                 String.format("%.2f, %.2f, %.2f", last.getP(), last.getA(), last.getD()),
                 this.getWidth() - 110, 20);
 
+        for (PADState state : getValuesForCurrentBuffer()) {
+            int x = getXForTime(state.getTimestamp(), startTime, endTime);
+
+            g2d.setColor(Palette.black);
+            g2d.drawLine(x, margin.top + getH(), x, margin.top + getH() / 2);
+
+            Label label = this.labelConfig.getMatchingLabel(state);
+
+            int labelWidth = (int) g2d.getFontMetrics().getStringBounds(label.getName(), g2d).getWidth();
+            int labelHeight = (int) g2d.getFontMetrics().getStringBounds(label.getName(), g2d).getHeight();
+
+            int border = 2;
+
+            g2d.setColor(label.getColor());
+            Rectangle2D rect = new Rectangle.Double(x, getCenterY() - labelHeight, labelWidth + 2 * border, labelHeight + 2 * border);
+            g2d.fill(rect);
+            g2d.draw(rect);
+            g2d.setColor(Utils.getNegative(label.getColor()));
+            g2d.drawString(label.getName(), x + border, getCenterY() + border);
+        }
+
+        /*
         for (PADState currentState : this.values) {
             int currentX;
 
@@ -74,5 +91,6 @@ public class LabelPanel extends BasicMultiplePanel {
             g2d.drawString(label.getName(), currentX + border, getCenterY() + border);
         }
 
+        //*/
     }
 }

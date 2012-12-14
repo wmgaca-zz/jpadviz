@@ -127,8 +127,18 @@ public abstract class BasicPanel extends JPanel {
      * @return Event's X coordinate.
      */
     final public int getXForTime(long time, long startTime, long endTime) {
-        long timeSpan = endTime - startTime;
+        double timeSpan = (double)(endTime - startTime);
+        double relativeTime = (double)(time - startTime);
+        return margin.left + (int)((relativeTime / timeSpan) * (double)getW());
+    }
 
-        return margin.left + (int)((double)(time - startTime / timeSpan) * getW());
+    /**
+     * Event's Y coordinate based on its value (larger value -> lower Y coordinate -> higher on the screen)
+     *
+     * @param value Event's value.
+     * @return Event's Y coordinate.
+     */
+    final public int getYForValue(float value) {
+        return getCenterY() + (int)(getH() * value / 2) * -1;
     }
 }

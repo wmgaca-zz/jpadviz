@@ -4,9 +4,12 @@ import lib.Utils;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.awt.*;
+
 public class Label {
 
     public String name;
+    public Color color = Color.lightGray;
 
     public float pMin;
     public float pMax;
@@ -97,6 +100,15 @@ public class Label {
         return this.name;
     }
 
+    public Color getColor() {
+        return this.color;
+    }
+
+    public void setColor(Color value) {
+        this.color = value;
+    }
+
+
     private static String getAttrFromNode(Node attrNode, String attrName) {
         if (!attrNode.hasAttributes()) {
             return null;
@@ -109,20 +121,27 @@ public class Label {
     public static Label fromNode(Node labelNode) {
         Label label = new Label(getAttrFromNode(labelNode, "name"));
 
+        String hexColor = getAttrFromNode(labelNode, "color");
+        if (null == hexColor) {
+            label.setColor(Color.gray);
+        } else {
+            label.setColor(Color.decode(hexColor));
+        }
+
         NodeList attrNodeList = labelNode.getChildNodes();
 
         for (int i = 0; i < attrNodeList.getLength(); ++i) {
             Node attrNode = attrNodeList.item(i);
 
             if (attrNode.getNodeName().toLowerCase().equals("p")) {
-                label.setPMax(Label.getAttrFromNode(attrNode, "max"));
-                label.setPMin(Label.getAttrFromNode(attrNode, "min"));
+                label.setPMax(getAttrFromNode(attrNode, "max"));
+                label.setPMin(getAttrFromNode(attrNode, "min"));
             } else if (attrNode.getNodeName().toLowerCase().equals("a")) {
-                label.setAMax(Label.getAttrFromNode(attrNode, "max"));
-                label.setAMin(Label.getAttrFromNode(attrNode, "min"));
+                label.setAMax(getAttrFromNode(attrNode, "max"));
+                label.setAMin(getAttrFromNode(attrNode, "min"));
             } else if (attrNode.getNodeName().toLowerCase().equals("d")) {
-                label.setDMax(Label.getAttrFromNode(attrNode, "max"));
-                label.setDMin(Label.getAttrFromNode(attrNode, "min"));
+                label.setDMax(getAttrFromNode(attrNode, "max"));
+                label.setDMin(getAttrFromNode(attrNode, "min"));
             }
         }
 

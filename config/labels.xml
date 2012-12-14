@@ -1,8 +1,8 @@
 <labels>
-    <label name="Happy">
+    <label name="Happy" color="#ffffee">
         <p min="0.3" max="0.5" />
     </label>
-    <label name="Sad">
+    <label name="Sad" color="#ffddff">
         <p min="-1.0" max="-0.1" />
     </label>
     <label name="Normal">

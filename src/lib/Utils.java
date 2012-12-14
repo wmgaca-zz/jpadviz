@@ -3,6 +3,7 @@ package lib;
 import lib.types.PADState;
 import lib.types.SinglePADValue;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
@@ -56,4 +57,11 @@ public class Utils {
         return reversed;
     }
 
+    public static Color getNegative(Color color) {
+        System.out.println("Color: " + color);
+        return new Color(
+                255 - color.getRed(),
+                255 - color.getGreen(),
+                255 - color.getBlue());
+    }
 }

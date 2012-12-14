@@ -36,13 +36,8 @@ public abstract class BasicMultiplePanel extends BasicPanel {
             }
         }
 
-        for (PADState state: values) {
-            if (state.getTimestamp() >= startTime && state.getTimestamp() <= endTime) {
-                list.add(state);
-            }
-        }
 
-        return list;
+        return Utils.reversePSList(list);
     }
 
     public ArrayList<PADState> getValuesForCurrentBuffer() {

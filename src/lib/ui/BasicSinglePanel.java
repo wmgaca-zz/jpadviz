@@ -1,5 +1,6 @@
 package lib.ui;
 
+import com.sun.servicetag.SystemEnvironment;
 import lib.Utils;
 import lib.types.PAD;
 import lib.types.PADState;
@@ -38,12 +39,19 @@ public abstract class BasicSinglePanel extends BasicPanel {
             }
         }
 
-        return list;
+        return Utils.reverseSPVList(list);
     }
 
     public ArrayList<SinglePADValue> getValuesForCurrentBuffer() {
         long endTime = System.currentTimeMillis();
         long startTime = endTime - buffer * 1000;
+
+        return getValuesForTime(startTime, endTime);
+    }
+
+    public ArrayList<SinglePADValue> getValuesPreCurrentBuffer() {
+        long startTime = 0;
+        long endTime = System.currentTimeMillis() - buffer * 1000;
 
         return getValuesForTime(startTime, endTime);
     }

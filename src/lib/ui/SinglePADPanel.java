@@ -6,11 +6,41 @@ import lib.types.SinglePADValue;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
+import java.util.ArrayList;
 
 public class SinglePADPanel extends BasicSinglePanel {
 
     public SinglePADPanel(PAD.Type type, int width, int height) {
         super(type, width, height);
+
+        PanelUpdater.handle(this);
+    }
+
+    private void drawPolygon(int x, int y, int prevX, int prevY, SinglePADValue currentValue, SinglePADValue prevValue, Graphics2D g2d) {
+        g2d.setColor(Palette.transparent);
+
+        // Assemble polygon
+        Polygon certaintyPolygon = new Polygon();
+        certaintyPolygon.addPoint(prevX, prevY);
+        certaintyPolygon.addPoint(x, y);
+        certaintyPolygon.addPoint(x, margin.top + getH());
+        certaintyPolygon.addPoint(prevX, margin.top + getH());
+        certaintyPolygon.addPoint(prevX, prevY);
+
+        // Draw polygon
+        g2d.setColor(Palette.getTransparent(Palette.green, 0f));
+        g2d.draw(certaintyPolygon);
+
+        // Compute gradient's color, set gradient as paint & fill the polygon
+        Color currentColor = (currentValue.value > 0) ? Palette.green : Palette.red;
+        Color prevColor = (prevValue.value > 0) ? Palette.green : Palette.red;
+        g2d.setPaint(new GradientPaint(prevX, 0, Palette.getTransparent(prevColor, prevValue.certainty),
+                                       x, 0, Palette.getTransparent(currentColor, currentValue.certainty)));
+        g2d.fill(certaintyPolygon);
+
+        // Draw top line in blue
+        g2d.setColor(Palette.blue);
+        g2d.drawLine(prevX, prevY, x, y);
     }
 
     @Override
@@ -21,82 +51,76 @@ public class SinglePADPanel extends BasicSinglePanel {
             return;
         }
 
+        long currentTime = System.currentTimeMillis();
+        long startTime = currentTime - buffer * 1000;
+        SinglePADValue lastValue = values.get(len - 1);
+
+        // Draw -1, 0 and 1 Y lines
         g2d.setColor(Palette.black);
-
-        // Draw X line
+        g2d.drawLine(margin.left, margin.top, getWidth() - margin.right, margin.top);
         g2d.drawLine(margin.left, getCenterY(), getWidth() - margin.right, getCenterY());
-
-        // Draw Y line
-        g2d.drawLine(margin.left, getHeight() - margin.bottom, margin.left, margin.top);
-
-        SinglePADValue value = values.get(len - 1);
+        g2d.drawLine(margin.left, margin.top + getH(), getWidth() - margin.right, margin.top + getH());
 
         // Draw the value
         g2d.drawString(
-                String.format("%s: %.2f (%.2f)", label, value.value, value.certainty),
-                this.getWidth() - 90, 20);
+                String.format("%s: %.2f (%.2f)", label, lastValue.value, lastValue.certainty),
+                this.getWidth() - 90, 25);
 
-        int currentX;
-        int currentY;
-        int lastX = margin.left;
-        int lastY = getCenterY();
+        ArrayList<SinglePADValue> padValues = getValuesForCurrentBuffer();
+        SinglePADValue prevValue = null;
 
-        SinglePADValue lastValue = new SinglePADValue(0f, 0f, System.currentTimeMillis());
+        int prevX = 0;
+        int prevY = 0;
 
-        for (int i = 0; i < values.size(); ++i) {
-            SinglePADValue currentValue = values.get(i);
+        // Compute start point's Y at X = 0
+        ArrayList<SinglePADValue> preBuffer = getValuesPreCurrentBuffer();
+        if (0 != preBuffer.size()) {
+            SinglePADValue firstValue = padValues.get(0);
+            prevValue = preBuffer.get(preBuffer.size() - 1);
 
-            currentX = margin.left + ((i + 1) * this.getW()) / len;
-            currentY = getCenterY() + (int)(this.getH() * currentValue.value / 2) * -1;
+            float firstValueY = getYForValue(firstValue.value);
+            float prevValueY = getYForValue(prevValue.value);
 
-            g2d.setColor(Palette.transparent);
-            Polygon cert = new Polygon();
-            cert.addPoint(lastX, lastY);
-            cert.addPoint(currentX, currentY);
-            cert.addPoint(currentX, margin.top + getH());
-            cert.addPoint(lastX, margin.top + getH());
-            cert.addPoint(lastX, lastY);
-            g2d.drawPolygon(cert);
+            long distance = firstValue.timestamp - prevValue.timestamp; // distance between points
+            long lost = startTime - firstValue.timestamp; // distance out of borders
 
-            Color currentColor = (currentValue.value > 0) ? Palette.green : Palette.red;
-            Color lastColor = (lastValue.value > 0) ? Palette.green : Palette.red;
+            float deltaY = (firstValueY - prevValueY) * (float)lost / (float)distance;
 
-            g2d.setColor(Palette.getTransparent(Palette.green, currentValue.certainty));
-            GradientPaint gp = new GradientPaint(
-                    lastX, 0, Palette.getTransparent(lastColor, lastValue.certainty),
-                    currentX, 0, Palette.getTransparent(currentColor, currentValue.certainty));
-            g2d.setPaint(gp);
-            g2d.fill(cert);
-
-            g2d.setColor(Palette.blue);
-            g2d.drawLine(lastX, lastY, currentX, currentY);
-
-            lastX = currentX;
-            lastY = currentY;
-            lastValue = currentValue;
+            prevY = (int)((float)firstValueY + deltaY);
+            prevX = margin.left;
         }
 
-        for (int i = 0; i < this.values.size(); ++i) {
-            SinglePADValue currentValue = this.values.get(i);
+        // Draw gradient background
+        for (SinglePADValue padValue : padValues) {
+            int x = getXForTime(padValue.timestamp, startTime, currentTime);
+            int y = getYForValue(padValue.value);
 
-            currentX = margin.left + ((i + 1) * getW()) / len;
-            currentY = getCenterY() + (int)(getH() * currentValue.value / 2) * -1;
+            if (null != prevValue) {
+                drawPolygon(x, y, prevX, prevY, padValue, prevValue, g2d);
+            }
 
+            prevX = x;
+            prevY = y;
+            prevValue = padValue;
+        }
+
+        drawPolygon(margin.left + getW(), prevY, prevX, prevY, prevValue, prevValue, g2d);
+
+        // Draw points and labels
+        for (SinglePADValue padValue : getValuesForCurrentBuffer()) {
+            int x = getXForTime(padValue.timestamp, startTime, currentTime);
+            int y = getYForValue(padValue.value);
+
+            // Point
             g2d.setColor(Palette.blue);
-            Ellipse2D circle = new Ellipse2D.Double(currentX - 3, currentY - 4, 6f, 6f);
+            Ellipse2D circle = new Ellipse2D.Double(x - 3, y - 4, 6f, 6f);
             g2d.fill(circle);
             g2d.draw(circle);
 
+            // Labels
             g2d.setColor(Palette.black);
-            g2d.drawString(
-                    String.format("%.1f", currentValue.value),
-                    currentX - 5, currentY - 10);
-
-            g2d.drawString(
-                    String.format("%.1f", currentValue.certainty),
-                    currentX,
-                    currentY + (this.getHeight() - currentY) / 2
-            );
+            g2d.drawString(String.format("%.1f", padValue.value), x - 5, y - 10);
+            g2d.drawString(String.format("%.1f", padValue.certainty), x, y + (this.getHeight() - y) / 2);
         }
     }
 

@@ -4,7 +4,7 @@ import lib.types.ClientType;
 import lib.types.LabelConfig;
 import lib.types.packages.*;
 import lib.types.packages.Package;
-import lib.ui.JavaPaintUI;
+import lib.ui.DynamicFrame;
 
 import javax.swing.*;
 import java.io.*;
@@ -18,7 +18,7 @@ public class PadVisualiser {
     private MainWindowForm mainForm = new MainWindowForm();
     private LabelConfig labelConfig = null;
 
-    private JavaPaintUI frame;
+    private DynamicFrame frame;
 
     private String serverHost;
     private int serverPort;
@@ -116,7 +116,7 @@ public class PadVisualiser {
 
     private void initUI() {
 
-        this.frame = new JavaPaintUI(this.labelConfig);
+        this.frame = new DynamicFrame(this.labelConfig);
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.frame.setVisible(true);
 
@@ -130,7 +130,7 @@ public class PadVisualiser {
 
         //JFrame frame = new JFrame("MyForm");
         /*
-        JFrame frame = new JavaPaintUI();
+        JFrame frame = new DynamicFrame();
         frame.setContentPane(this.mainForm.getMainPanel());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -148,17 +148,17 @@ public class PadVisualiser {
 
             System.out.println("UpdateUI!");
         } catch (InterruptedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
     }
 
     public void run() {
-        this.setupNetworking();
+        //this.setupNetworking();
         this.initUI();
 
         Package data;
 
-        for (int i = 0; i < 100; ++i) {
+        while (!this.mainForm.getExitApp()) {
             this.updateUI();
         }
 
