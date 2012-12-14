@@ -47,11 +47,22 @@ public abstract class BasicPanel extends JPanel {
     }
 
     /**
+     * Update widget's data with a new state. This method is called by feed().
+     *
+     * @see #feed(lib.types.PADState)
+     * @param state State
+     */
+    protected abstract void feedState(PADState state);
+
+    /**
      * Update widget's data with a new state.
      *
      * @param state State
      */
-    public abstract void feed(PADState state);
+    public final void feed(PADState state) {
+        feedState(state);
+        repaint();
+    }
 
     /**
      * Widget's drawing logic. This method is called by BasicPanel.paintComponent.

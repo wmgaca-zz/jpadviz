@@ -15,7 +15,8 @@ public abstract class BasicMultiplePanel extends BasicPanel {
         super(PAD.Type.PAD, width, height);
     }
 
-    public void feed(PADState state) {
+    @Override
+    protected void feedState(PADState state) {
         this.values.add(state);
     }
 
@@ -35,7 +36,6 @@ public abstract class BasicMultiplePanel extends BasicPanel {
                 break;
             }
         }
-
 
         return Utils.reversePSList(list);
     }

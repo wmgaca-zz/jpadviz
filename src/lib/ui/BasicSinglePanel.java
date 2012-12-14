@@ -18,7 +18,7 @@ public abstract class BasicSinglePanel extends BasicPanel {
     }
 
     @Override
-    public void feed(PADState state) {
+    protected void feedState(PADState state) {
         values.add(state.getSinglePADValue(type));
     }
 
