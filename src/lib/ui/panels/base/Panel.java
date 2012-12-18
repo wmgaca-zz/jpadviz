@@ -1,7 +1,8 @@
-package lib.ui;
+package lib.ui.panels.base;
 
 import lib.types.PAD;
 import lib.types.PADState;
+import lib.ui.Margin;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,12 +12,12 @@ import java.awt.*;
  *
  * @author Wojciech Gaca
  */
-public abstract class BasicPanel extends JPanel {
+public abstract class Panel extends JPanel {
 
     /**
      * Time span in seconds.
      */
-    protected int buffer = 10;
+    protected int buffer = 15;
 
     /**
      * Data type visualised by the widget.
@@ -36,11 +37,11 @@ public abstract class BasicPanel extends JPanel {
     /**
      * Initializes the widget.
      *
-     * @param type BasicPanel.type
+     * @param type Panel.type
      * @param width Widget's width resolution (in pixels)
      * @param height Widget's height resolution (in pixels)
      */
-    public BasicPanel(PAD.Type type, int width, int height) {
+    public Panel(PAD.Type type, int width, int height) {
         this.setPreferredSize(new Dimension(width, height));
         this.type = type;
         this.label = PAD.getName(type);
@@ -65,7 +66,7 @@ public abstract class BasicPanel extends JPanel {
     }
 
     /**
-     * Widget's drawing logic. This method is called by BasicPanel.paintComponent.
+     * Widget's drawing logic. This method is called by Panel.paintComponent.
      *
      * @param g2d Graphics object to be drawn
      */
@@ -74,6 +75,7 @@ public abstract class BasicPanel extends JPanel {
     /**
      * Widget's drawing logic.
      *
+     * @see #paintComponent(java.awt.Graphics)
      * @param graphics Graphics object to be drawn
      */
     @Override

@@ -13,6 +13,7 @@ public class Utils {
     private static Random randomGenerator = null;
 
     public static class ReturnCode {
+        public static int NORMAL = 0;
         public static int ERROR = -1;
     }
 
@@ -58,7 +59,6 @@ public class Utils {
     }
 
     public static Color getNegative(Color color) {
-        System.out.println("Color: " + color);
         return new Color(
                 255 - color.getRed(),
                 255 - color.getGreen(),

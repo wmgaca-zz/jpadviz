@@ -3,8 +3,9 @@ import lib.forms.MainWindowForm;
 import lib.types.ClientType;
 import lib.types.LabelConfig;
 import lib.types.packages.*;
-import lib.types.packages.Package;
-import lib.ui.DynamicFrame;
+import lib.types.packages.base.Package;
+import lib.ui.frames.FullDynamicFrame;
+import lib.ui.frames.base.Frame;
 
 import javax.swing.*;
 import java.io.*;
@@ -18,7 +19,7 @@ public class PadVisualiser {
     private MainWindowForm mainForm = new MainWindowForm();
     private LabelConfig labelConfig = null;
 
-    private DynamicFrame frame;
+    private Frame frame;
 
     private String serverHost;
     private int serverPort;
@@ -116,9 +117,10 @@ public class PadVisualiser {
 
     private void initUI() {
 
-        this.frame = new DynamicFrame(this.labelConfig);
+        this.frame = new FullDynamicFrame(this.labelConfig);
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.frame.setVisible(true);
+
 
         /*
             EventQueue.invokeLater(new Runnable() {
@@ -130,7 +132,7 @@ public class PadVisualiser {
 
         //JFrame frame = new JFrame("MyForm");
         /*
-        JFrame frame = new DynamicFrame();
+        JFrame frame = new FullDynamicFrame();
         frame.setContentPane(this.mainForm.getMainPanel());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -140,16 +142,14 @@ public class PadVisualiser {
     }
 
     private void updateUI() {
+        //*
         try {
-
             this.frame.feed(PADPackage.getRandom().getState());
-
             Thread.sleep(Utils.getRandomGenerator().nextInt(2500) + 500);
-
-            System.out.println("UpdateUI!");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        //*/
     }
 
     public void run() {

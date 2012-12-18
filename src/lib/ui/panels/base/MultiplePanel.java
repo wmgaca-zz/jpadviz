@@ -1,4 +1,4 @@
-package lib.ui;
+package lib.ui.panels.base;
 
 import lib.Utils;
 import lib.types.PAD;
@@ -7,11 +7,11 @@ import lib.types.PADState;
 import java.awt.*;
 import java.util.ArrayList;
 
-public abstract class BasicMultiplePanel extends BasicPanel {
+public abstract class MultiplePanel extends Panel {
 
     protected ArrayList<PADState> values = new ArrayList<PADState>();
 
-    public BasicMultiplePanel(int width, int height) {
+    public MultiplePanel(int width, int height) {
         super(PAD.Type.PAD, width, height);
     }
 

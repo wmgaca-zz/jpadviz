@@ -1,19 +1,22 @@
-package lib.ui;
+package lib.ui.panels;
 
 import lib.Utils;
 import lib.types.Label;
 import lib.types.LabelConfig;
 import lib.types.PADState;
 import lib.types.Palette;
+import lib.ui.Margin;
+import lib.ui.PanelUpdater;
+import lib.ui.panels.base.MultiplePanel;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
-public class LabelPanel extends BasicMultiplePanel {
+public class LabelPanel extends MultiplePanel {
 
     protected LabelConfig labelConfig;
 
-    LabelPanel(int width, int height, LabelConfig labelConfig) {
+    public LabelPanel(int width, int height, LabelConfig labelConfig) {
         super(width, height);
 
         this.margin = new Margin(10, 10, 10, 50);

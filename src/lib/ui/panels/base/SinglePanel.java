@@ -1,6 +1,5 @@
-package lib.ui;
+package lib.ui.panels.base;
 
-import com.sun.servicetag.SystemEnvironment;
 import lib.Utils;
 import lib.types.PAD;
 import lib.types.PADState;
@@ -9,11 +8,11 @@ import lib.types.SinglePADValue;
 import java.awt.*;
 import java.util.ArrayList;
 
-public abstract class BasicSinglePanel extends BasicPanel {
+public abstract class SinglePanel extends lib.ui.panels.base.Panel {
 
     protected ArrayList<SinglePADValue> values = new ArrayList<SinglePADValue>();
 
-    public BasicSinglePanel(PAD.Type type, int width, int height) {
+    public SinglePanel(PAD.Type type, int width, int height) {
         super(type, width, height);
     }
 

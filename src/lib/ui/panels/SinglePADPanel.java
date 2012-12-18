@@ -1,14 +1,16 @@
-package lib.ui;
+package lib.ui.panels;
 
 import lib.types.PAD;
 import lib.types.Palette;
 import lib.types.SinglePADValue;
+import lib.ui.PanelUpdater;
+import lib.ui.panels.base.SinglePanel;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 
-public class SinglePADPanel extends BasicSinglePanel {
+public class SinglePADPanel extends SinglePanel {
 
     public SinglePADPanel(PAD.Type type, int width, int height) {
         super(type, width, height);

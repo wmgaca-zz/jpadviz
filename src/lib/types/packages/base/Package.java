@@ -1,4 +1,4 @@
-package lib.types.packages;
+package lib.types.packages.base;
 
 import lib.types.PackageType;
 

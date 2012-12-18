@@ -2,7 +2,7 @@ package lib.types.packages;
 
 import lib.types.PackageType;
 
-public class DataPackage extends Package {
+public class DataPackage extends lib.types.packages.base.Package {
 
     protected String message;
 

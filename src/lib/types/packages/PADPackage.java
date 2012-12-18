@@ -4,7 +4,7 @@ import lib.Utils;
 import lib.types.PADState;
 import lib.types.PackageType;
 
-public class PADPackage extends Package {
+public class PADPackage extends lib.types.packages.base.Package {
 
     protected PADState state;
 

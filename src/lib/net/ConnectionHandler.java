@@ -2,7 +2,7 @@ package lib.net;
 
 import lib.types.ClientType;
 import lib.types.packages.*;
-import lib.types.packages.Package;
+import lib.types.packages.base.Package;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

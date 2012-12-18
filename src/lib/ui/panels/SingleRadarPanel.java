@@ -1,18 +1,20 @@
-package lib.ui;
+package lib.ui.panels;
 
 import lib.types.PAD;
 import lib.types.Palette;
+import lib.ui.PanelUpdater;
+import lib.ui.panels.base.SinglePanel;
 
 import java.awt.*;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 
-public class SingleRadarPanel extends BasicSinglePanel {
+public class SingleRadarPanel extends SinglePanel {
 
     private float currentArcStart = 90f;
     private int arcLen = 360;
 
-    SingleRadarPanel(PAD.Type type, int width, int height) {
+    public SingleRadarPanel(PAD.Type type, int width, int height) {
         super(type, width, height);
 
         PanelUpdater.handle(this);
@@ -41,7 +43,6 @@ public class SingleRadarPanel extends BasicSinglePanel {
         g2d.fill(circle);
 
         g2d.draw(circle);
-
     }
 
     @Override
@@ -56,7 +57,7 @@ public class SingleRadarPanel extends BasicSinglePanel {
 
         drawCircle(g2d, Palette.getTransparent((value > 0) ? Palette.green : Palette.red, certainty));
 
-        float arcSpeed = -10 * value;
+        float arcSpeed = -1 * value;
         currentArcStart = (currentArcStart + arcSpeed) % 360;
         drawArc((int)currentArcStart, arcLen, g2d, Palette.grey, 5f);
 

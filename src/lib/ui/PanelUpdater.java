@@ -1,18 +1,20 @@
 package lib.ui;
 
+import lib.ui.panels.base.Panel;
+
 public class PanelUpdater implements Runnable {
-    BasicPanel panel;
+    Panel panel;
 
     // In miliseconds
-    int refreshRate = 100;
+    int refreshRate = 10;
 
-    PanelUpdater(BasicPanel panel, int refreshRate) {
+    PanelUpdater(Panel panel, int refreshRate) {
         this(panel);
 
         this.refreshRate = refreshRate;
     }
 
-    PanelUpdater(BasicPanel panel) {
+    PanelUpdater(Panel panel) {
         this.panel = panel;
     }
 
@@ -28,7 +30,7 @@ public class PanelUpdater implements Runnable {
         }
     }
 
-    public static void handle(BasicPanel panel) {
+    public static void handle(Panel panel) {
         Thread thread = new Thread(new PanelUpdater(panel));
         thread.start();
     }
