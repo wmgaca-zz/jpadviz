@@ -30,7 +30,7 @@ public class PadDummyClient {
 
             for (int i = 0; i < 100; ++i) {
                 out.writeObject(PADPackage.getRandom());
-                Thread.sleep(1000);
+                Thread.sleep(Utils.getRandomGenerator().nextInt(2500) + 500);
             }
 
             out.writeObject(new EndPackage());

@@ -1,10 +1,12 @@
 import lib.Utils;
+import lib.config.VisualiserConfig;
 import lib.forms.MainWindowForm;
 import lib.types.ClientType;
 import lib.types.LabelConfig;
 import lib.types.packages.*;
 import lib.types.packages.base.Package;
 import lib.ui.frames.FullDynamicFrame;
+import lib.ui.frames.MinimizedDynamicFrame;
 import lib.ui.frames.base.Frame;
 
 import javax.swing.*;
@@ -13,24 +15,28 @@ import java.net.Socket;
 
 public class PadVisualiser {
 
-    private static String workingDir = System.getProperty("user.dir");
-    private static File labelConfigFile = new File(PadVisualiser.workingDir, "config/labels.xml");
+    protected static String workingDir = System.getProperty("user.dir");
+    protected static File labelConfigFile = new File(PadVisualiser.workingDir, "config/labels.xml");
+    protected static File configFile = new File(PadVisualiser.workingDir, "config/visualiser-settings.xml");
 
-    private MainWindowForm mainForm = new MainWindowForm();
-    private LabelConfig labelConfig = null;
+    protected VisualiserConfig config = new VisualiserConfig(configFile);
 
-    private Frame frame;
+    protected MainWindowForm mainForm = new MainWindowForm();
+    protected LabelConfig labelConfig = null;
 
-    private String serverHost;
-    private int serverPort;
-    private Socket socket;
-    private ObjectOutputStream outStream;
-    private ObjectInput inStream;
+    protected Frame frame;
+
+    protected String serverHost;
+    protected int serverPort;
+    protected Socket socket;
+    protected ObjectOutputStream outStream;
+    protected ObjectInput inStream;
 
     public static void main(String[] args) {
 
         // Read the labels
         LabelConfig labelConfig = new LabelConfig(labelConfigFile);
+
 
         PadVisualiser padVisualiser = new PadVisualiser(labelConfig);
         padVisualiser.run();
@@ -66,7 +72,7 @@ public class PadVisualiser {
         }
     }
 
-    private void closeNetworking() {
+    protected void closeNetworking() {
         try {
             this.socket.close();
         } catch (IOException error) {
@@ -74,7 +80,7 @@ public class PadVisualiser {
         }
     }
 
-    private boolean send(Package data) {
+    protected boolean send(Package data) {
         if (null == this.outStream) {
             this.setupNetworking();
         }
@@ -89,7 +95,7 @@ public class PadVisualiser {
         return true;
     }
 
-    private Package read() {
+    protected Package read() {
         Package data = null;
 
         try {
@@ -104,73 +110,58 @@ public class PadVisualiser {
         return data;
     }
 
-
-    private void dispatchPackage(Package data) {
+    protected void dispatchPackage(Package data) {
         if (data instanceof PADPackage) {
             PADPackage pad = (PADPackage)data;
-        } else if (data instanceof DataPackage) {
-            DataPackage dat = (DataPackage)data;
+            frame.feed(((PADPackage) data).getState());
         }
 
         System.out.println(String.format("Package: %s", data));
     }
 
-    private void initUI() {
-
-        this.frame = new FullDynamicFrame(this.labelConfig);
+    protected void initUI() {
+        if (config.getLayout().equals("min")) {
+            frame = new MinimizedDynamicFrame(labelConfig);
+        } else {
+            frame = new FullDynamicFrame(labelConfig);
+        }
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.frame.setVisible(true);
-
-
-        /*
-            EventQueue.invokeLater(new Runnable() {
-                public void run() {
-                    frame.setVisible(true);
-                }
-           });
-          //*/
-
-        //JFrame frame = new JFrame("MyForm");
-        /*
-        JFrame frame = new FullDynamicFrame();
-        frame.setContentPane(this.mainForm.getMainPanel());
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
-        frame.getGraphics().drawLine(0, 0, 5, 5);
-        //*/
     }
 
-    private void updateUI() {
-        //*
-        try {
-            this.frame.feed(PADPackage.getRandom().getState());
-            Thread.sleep(Utils.getRandomGenerator().nextInt(2500) + 500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    protected void runRealTime() {
+        send(new HandshakePackage(ClientType.VISUALISER));
+
+        Package data;
+        while (!this.mainForm.getExitApp() && (data = this.read()) != null) {
+            dispatchPackage(data);
         }
-        //*/
+
+        send(new EndPackage());
+    }
+
+    protected void runLoad() {
+        send(new RequestDataPackage(-1));
+
+        Package data;
+        while (!this.mainForm.getExitApp() && (data = this.read()) != null) {
+            dispatchPackage(data);
+        }
+
+        System.out.println("Fetched!");
+
+        send(new EndPackage());
     }
 
     public void run() {
-        //this.setupNetworking();
+        this.setupNetworking();
         this.initUI();
 
-        Package data;
-
-        while (!this.mainForm.getExitApp()) {
-            this.updateUI();
+        if (config.getMode().equals("auto")) {
+            runRealTime();
+        } else {
+            runLoad();
         }
-
-        this.send(new HandshakePackage(ClientType.VISUALISER));
-
-        while (!this.mainForm.getExitApp() && (data = this.read()) != null) {
-            this.dispatchPackage(data);
-            this.updateUI();
-        }
-
-        this.send(new EndPackage());
-
 
         this.closeNetworking();
     }

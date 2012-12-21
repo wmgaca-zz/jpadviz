@@ -9,23 +9,35 @@ public class ServerConfig extends PadConfig {
     }
 
     public int getPort() {
-        return this.getInt("port");
+        return getInt("port");
     }
 
     public String getHost() {
-        return this.get("host");
+        return get("host");
+    }
+
+    public String getDBConnectionString() {
+        return get("db_string");
+    }
+
+    public String getDBUser() {
+        return get("db_user");
+    }
+
+    public String getDBPassword() {
+        return get("db_password");
     }
 
     public boolean validate() {
         String[] fields = new String[] {
-                "port",
-                "host"
+                "port", "host", "db_string", "db_user", "db_password"
         };
 
         boolean result = true;
 
         for (String field : fields) {
-            if (null == this.configHandler.get(field)) {
+            System.out.println(field);
+            if (null == get(field)) {
                 System.out.println(
                         String.format("Config value missing: %s", field));
                 result = false;

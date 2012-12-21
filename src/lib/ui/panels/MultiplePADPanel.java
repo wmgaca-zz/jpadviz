@@ -1,6 +1,5 @@
 package lib.ui.panels;
 
-import javax.swing.*;
 import java.awt.*;
 
 import com.sun.j3d.utils.universe.*;
@@ -10,18 +9,20 @@ import javax.vecmath.*;
 import com.sun.j3d.utils.behaviors.vp.*;
 
 import com.sun.j3d.utils.geometry.Text2D;
+import lib.ui.panels.base.MultiplePanel;
+
 import java.util.ArrayList;
 
-class CheckerFloor
+class PADFloor
 {
-    private final static int FLOOR_LEN = 20;  // should be even
+    private final static int FLOOR_LEN = 100;  // should be even
 
     // colours for floor, etc
     private final static Color3f white = new Color3f(1.0f, 1.0f, 1.0f);
 
     private BranchGroup floorBG;
 
-    public CheckerFloor() {
+    public PADFloor() {
         ArrayList greenCoords = new ArrayList();
         floorBG = new BranchGroup();
 
@@ -32,9 +33,7 @@ class CheckerFloor
             }
         }
         addOriginMarker();
-        labelAxes();
-    }  // end of CheckerFloor()
-
+    }
 
     private void createCoords(int x, int z, ArrayList coords) {
         // points created in counter-clockwise order
@@ -64,24 +63,6 @@ class CheckerFloor
         //floorBG.addChild( new ColouredTiles(oCoords, medRed) );
     } // end of addOriginMarker();
 
-
-    private void labelAxes()
-    // Place numbers along the X- and Z-axes at the integer positions
-    {
-        Vector3d pt = new Vector3d();
-        for (int i=-FLOOR_LEN/2; i <= FLOOR_LEN/2; i++) {
-            pt.x = i;
-            floorBG.addChild( makeText(pt,""+i) );   // along x-axis
-        }
-
-        pt.x = 0;
-        for (int i=-FLOOR_LEN/2; i <= FLOOR_LEN/2; i++) {
-            pt.z = i;
-            floorBG.addChild( makeText(pt,""+i) );   // along z-axis
-        }
-    }  // end of labelAxes()
-
-
     private TransformGroup makeText(Vector3d vertex, String text) {
         // Create a Text2D object at the specified vertex
         Text2D message = new Text2D(text, white, "SansSerif", 36, Font.BOLD );
@@ -101,25 +82,25 @@ class CheckerFloor
     }
 
 
-}  // end of CheckerFloor class
+}  // end of PADFloor class
 
-public class MultiplePADPanel extends JPanel {
+public class MultiplePADPanel extends MultiplePanel {
 
-    private static final int BOUNDSIZE = 100;  // larger than world
+    protected static final int BoundSize = 100;  // larger than world
 
-    private static final Point3d USERPOSN = new Point3d(0,5,20);
-    // initial user position
+    protected static final Point3d UserPosition = new Point3d(0,5,20);
 
-    private SimpleUniverse su;
-    private BranchGroup sceneBG;
-    private BoundingSphere bounds;   // for environment nodes
+    protected SimpleUniverse universe;
+    protected BranchGroup branchGroup;
+    protected BoundingSphere boundingSphere;
 
     // private Java3dTree j3dTree;   // frame to hold tree display
 
     public MultiplePADPanel(int width, int height) {
+        super(width, height);
+
         setLayout(new BorderLayout());
         setOpaque(false);
-        setPreferredSize(new Dimension(width, height));
 
         GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
         Canvas3D canvas3D = new Canvas3D(config);
@@ -127,105 +108,89 @@ public class MultiplePADPanel extends JPanel {
         canvas3D.setFocusable(true);     // give focus to the canvas
         canvas3D.requestFocus();
 
-        su = new SimpleUniverse(canvas3D);
+        universe = new SimpleUniverse(canvas3D);
 
         createSceneGraph();
-        initUserPosition();        // set user's viewpoint
-        orbitControls(canvas3D);   // controls for moving the viewpoint
+        initUserPosition();
+        orbitControls(canvas3D);
 
-        su.addBranchGraph(sceneBG);
-    } // end of MultiplePADPanel()
+        universe.addBranchGraph(branchGroup);
+    }
 
-    private void createSceneGraph()
-    // initilise the scene
-    {
-        sceneBG = new BranchGroup();
-        bounds = new BoundingSphere(new Point3d(0,0,0), 100);
+    @Override
+    public void customPaintComponent(Graphics2D g2d) {
+    }
 
-        lightScene();         // add the lights
-        addBackground();      // add the sky
-        sceneBG.addChild( new CheckerFloor().getBG() );  // add the floor
+    /**
+     * Initialise the scene.
+     */
+    private void createSceneGraph() {
+        branchGroup = new BranchGroup();
+        boundingSphere = new BoundingSphere(new Point3d(0,0,0), BoundSize);
 
-        floatingSphere();     // add the floating sphere
+        // add the lights
+        lightScene();
 
-        // j3dTree.recursiveApplyCapability( sceneBG );   // set capabilities for tree display
+        // add the sky
+        addBackground();
 
-        sceneBG.compile();   // fix the scene
-    } // end of createSceneGraph()
+        branchGroup.addChild(new PADFloor().getBG());
 
+        floatingSphere();
+        branchGroup.compile();
+    }
 
-    private void lightScene()
-        /* One ambient light, 2 directional lights */
-    {
+    /**
+     * Light the scene.
+     * One ambient light, two directional lights.
+     */
+    private void lightScene() {
         Color3f white = new Color3f(1.0f, 1.0f, 1.0f);
 
-        // Set up the ambient light
+        // Ambient light
         AmbientLight ambientLightNode = new AmbientLight(white);
-        ambientLightNode.setInfluencingBounds(bounds);
-        sceneBG.addChild(ambientLightNode);
+        ambientLightNode.setInfluencingBounds(boundingSphere);
+        branchGroup.addChild(ambientLightNode);
 
-        // Set up the directional lights
-        Vector3f light1Direction  = new Vector3f(-1.0f, -1.0f, -1.0f);
-        // left, down, backwards
-        Vector3f light2Direction  = new Vector3f(1.0f, -1.0f, 1.0f);
-        // right, down, forwards
+        // Directional light: left, down, backwards
+        DirectionalLight light1 = new DirectionalLight(white, new Vector3f(-1.0f, -1.0f, -1.0f));
+        light1.setInfluencingBounds(boundingSphere);
+        branchGroup.addChild(light1);
 
-        DirectionalLight light1 =
-                new DirectionalLight(white, light1Direction);
-        light1.setInfluencingBounds(bounds);
-        sceneBG.addChild(light1);
+        // Directional light: right, down, forwards
+        DirectionalLight light2 = new DirectionalLight(white, new Vector3f(1.0f, -1.0f, 1.0f));
+        light2.setInfluencingBounds(boundingSphere);
+        branchGroup.addChild(light2);
+    }
 
-        DirectionalLight light2 =
-                new DirectionalLight(white, light2Direction);
-        light2.setInfluencingBounds(bounds);
-        sceneBG.addChild(light2);
-    }  // end of lightScene()
-
-
-
-    private void addBackground()
-    // A blue sky
-    { Background back = new Background();
-        back.setApplicationBounds( bounds );
+    private void addBackground() {
+        Background back = new Background();
+        back.setApplicationBounds(boundingSphere);
         back.setColor(0.17f, 0.65f, 0.92f);    // sky colour
-        sceneBG.addChild( back );
-    }  // end of addBackground()
+        branchGroup.addChild(back);
+    }
 
+    private void orbitControls(Canvas3D c) {
+        OrbitBehavior orbitBehavior = new OrbitBehavior(c, OrbitBehavior.REVERSE_ALL);
+        orbitBehavior.setSchedulingBounds(boundingSphere);
+        universe.getViewingPlatform().setViewPlatformBehavior(orbitBehavior);
+    }
 
-
-    private void orbitControls(Canvas3D c)
-        /* OrbitBehaviour allows the user to rotate around the scene, and to
-   zoom in and out.  */
-    {
-        OrbitBehavior orbit =
-                new OrbitBehavior(c, OrbitBehavior.REVERSE_ALL);
-        orbit.setSchedulingBounds(bounds);
-
-        ViewingPlatform vp = su.getViewingPlatform();
-        vp.setViewPlatformBehavior(orbit);
-    }  // end of orbitControls()
-
-
-
-    private void initUserPosition()
-    // Set the user's initial viewpoint using lookAt()
-    {
-        ViewingPlatform vp = su.getViewingPlatform();
+    private void initUserPosition() {
+        ViewingPlatform vp = universe.getViewingPlatform();
         TransformGroup steerTG = vp.getViewPlatformTransform();
 
         Transform3D t3d = new Transform3D();
         steerTG.getTransform(t3d);
 
         // args are: viewer posn, where looking, up direction
-        t3d.lookAt( USERPOSN, new Point3d(0,0,0), new Vector3d(0,1,0));
+        t3d.lookAt(UserPosition, new Point3d(0,0,0), new Vector3d(0,1,0));
         t3d.invert();
 
         steerTG.setTransform(t3d);
-    }  // end of initUserPosition()
+    }
 
-    private void floatingSphere()
-    // A shiny blue sphere located at (0,4,0)
-    {
+    private void floatingSphere() {
         // Create the blue appearance node
         Color3f black = new Color3f(0.0f, 0.0f, 0.0f);
         Color3f blue = new Color3f(0.3f, 0.3f, 0.8f);
@@ -244,8 +209,8 @@ public class MultiplePADPanel extends JPanel {
         TransformGroup tg = new TransformGroup(t3d);
         tg.addChild(new Sphere(2.0f, blueApp));   // set its radius and appearance
 
-        sceneBG.addChild(tg);
-    }  // end of floatingSphere()
+        branchGroup.addChild(tg);
+    }
 
-} // end of MultiplePADPanel class
+}
 

@@ -16,6 +16,8 @@ public class LabelPanel extends MultiplePanel {
 
     protected LabelConfig labelConfig;
 
+    protected int buffer = 15;
+
     public LabelPanel(int width, int height, LabelConfig labelConfig) {
         super(width, height);
 
@@ -50,7 +52,7 @@ public class LabelPanel extends MultiplePanel {
             int x = getXForTime(state.getTimestamp(), startTime, endTime);
 
             g2d.setColor(Palette.black);
-            g2d.drawLine(x, margin.top + getH(), x, margin.top + getH() / 2);
+            //g2d.drawLine(x, margin.top + getH(), x, margin.top + getH() / 2);
 
             Label label = this.labelConfig.getMatchingLabel(state);
 

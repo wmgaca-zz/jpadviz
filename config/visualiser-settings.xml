@@ -1,0 +1,11 @@
+<settings>
+
+    <!-- real time: "auto"
+         load data: any other value -->
+    <mode>auto</mode>
+
+    <!-- compact: "min"
+         full window: any other value -->
+    <layout>-[e</layout>
+
+</settings>

@@ -16,11 +16,17 @@ public abstract class SinglePanel extends lib.ui.panels.base.Panel {
         super(type, width, height);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void feedState(PADState state) {
         values.add(state.getSinglePADValue(type));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public abstract void customPaintComponent(Graphics2D g2d);
 

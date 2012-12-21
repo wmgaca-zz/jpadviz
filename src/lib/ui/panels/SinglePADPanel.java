@@ -71,6 +71,10 @@ public class SinglePADPanel extends SinglePanel {
         ArrayList<SinglePADValue> padValues = getValuesForCurrentBuffer();
         SinglePADValue prevValue = null;
 
+        if (padValues.size() == 0) {
+            return;
+        }
+
         int prevX = 0;
         int prevY = 0;
 

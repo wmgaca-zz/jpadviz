@@ -12,23 +12,28 @@ public class PADPackage extends lib.types.packages.base.Package {
         super(PackageType.PAD);
     }
 
+    public PADPackage(PADState padState) {
+        this();
+        state = padState;
+    }
+
     public PADPackage(float p, float a, float d, float cp, float ca, float cd) {
         this();
 
-        this.state = new PADState(p, a, d, cp, ca, cd);
+        state = new PADState(p, a, d, cp, ca, cd);
     }
 
     public void setState(PADState value) {
-        this.state = value;
+        state = value;
     }
 
     public PADState getState() {
-        return this.state;
+        return state;
     }
 
     @Override
     public String toString() {
-        return String.format("<PADPackage(state=%s)>", this.state.toString());
+        return String.format("<PADPackage(state=%s)>", state.toString());
     }
 
     public static PADPackage getRandom() {

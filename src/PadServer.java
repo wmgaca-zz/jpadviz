@@ -1,3 +1,4 @@
+import lib.DataHandler;
 import lib.Utils;
 import lib.config.ServerConfig;
 import lib.net.ConnectionHandler;
@@ -7,6 +8,7 @@ import java.io.IOException;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 
 public class PadServer {
 
@@ -14,6 +16,7 @@ public class PadServer {
     public static File serverConfigFile = new File(PadServer.workingDir, "config/server-settings.xml");
     public static ServerConfig config = new ServerConfig(PadServer.serverConfigFile);
     public static int connections = 0;
+    public static DataHandler db = null;
 
     public static void main(String[] args) {
         // Initialize application: read configuration files, set up things
@@ -30,6 +33,14 @@ public class PadServer {
             Utils.exitOnException(null, "Server config file contains errors.");
         } else {
             System.out.println("Server config file validation: OK.");
+        }
+
+        try {
+            db = new DataHandler(PadServer.config.getDBConnectionString(),
+                                 PadServer.config.getDBUser(),
+                                 PadServer.config.getDBPassword());
+        } catch (SQLException e) {
+            Utils.exitOnException(e, "Cannot connect to database.");
         }
     }
 
@@ -65,7 +76,7 @@ public class PadServer {
 
             System.out.println(String.format("Handling new connection on %s.", PadServer.config.getPort()));
 
-            ConnectionHandler.handle(socket, String.format("Conn#%d", PadServer.connections));
+            ConnectionHandler.handle(socket, String.format("Conn#%d", PadServer.connections), PadServer.db);
             ++PadServer.connections;
         }
     }

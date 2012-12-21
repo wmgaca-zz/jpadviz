@@ -42,8 +42,13 @@ public class ConfigHandler {
 
             try {
                 portNodes = this.doc.getElementsByTagName(tagName).item(0).getChildNodes();
-                this.nodeValues.put(tagName, portNodes.item(0).getNodeValue());
+                try {
+                    this.nodeValues.put(tagName, portNodes.item(0).getNodeValue());
+                } catch (NullPointerException error) {
+                    this.nodeValues.put(tagName, "");
+                }
             } catch (NullPointerException error) {
+                error.printStackTrace();
                 this.nodeValues.put(tagName, null);
             }
         }
