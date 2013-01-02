@@ -1,7 +1,7 @@
-package lib;
+package lib.utils;
 
 import lib.types.PADState;
-import lib.types.SinglePADValue;
+import lib.types.PADValue;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -46,8 +46,8 @@ public class Utils {
         return a;
     }
 
-    public static ArrayList<SinglePADValue> reverseSPVList(ArrayList<SinglePADValue> list) {
-        ArrayList<SinglePADValue> reversed = new ArrayList<SinglePADValue>(list);
+    public static ArrayList<PADValue> reverseSPVList(ArrayList<PADValue> list) {
+        ArrayList<PADValue> reversed = new ArrayList<PADValue>(list);
         Collections.reverse(reversed);
         return reversed;
     }

@@ -1,10 +1,10 @@
 package lib.net;
 
 import lib.DataHandler;
-import lib.types.ClientType;
+import lib.types.Client;
 import lib.types.PADState;
-import lib.types.packages.*;
-import lib.types.packages.base.Package;
+import lib.net.packages.*;
+import lib.net.packages.base.Package;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -12,18 +12,19 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.List;
+
+import static lib.utils.Logging.log;
+
 public class ConnectionHandler implements Runnable {
 
-    private static List<ConnectionHandler> connectionHandlers = new ArrayList<ConnectionHandler>();
-    private static List<ConnectionHandler> closeConnectionHandlers = new ArrayList<ConnectionHandler>();
+    protected static final ArrayList<ConnectionHandler> connectionHandlers = new ArrayList<ConnectionHandler>();
 
     private Socket socket;
     private String name;
-    private ClientType clientType;
+    private Client client;
 
-    private ObjectInputStream in = null;
-    private ObjectOutputStream out = null;
+    private ObjectInputStream input = null;
+    private ObjectOutputStream output = null;
 
     private DataHandler db = null;
 
@@ -34,38 +35,36 @@ public class ConnectionHandler implements Runnable {
     }
 
     private void endConnection() {
-        ConnectionHandler.closeConnectionHandlers.add(this);
+        log("End connection for %s", name);
 
-        if (null != in) {
+        removeHandler(this);
+
+        if (null != input) {
             try {
-                in.close();
-            } catch (SocketException error) {
-                 System.out.println("Socket already closed");
+                input.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                log("Input stream already closed.");
             }
         }
 
-        if (null != out) {
+        if (null != output) {
             try {
-                out.close();
-            } catch (SocketException error) {
-                System.out.println("Socket already closed");
-            } catch (IOException error) {
-                error.printStackTrace();
+                output.close();
+            } catch (IOException e) {
+                log("Output stream already closed.");
             }
         }
     }
 
     private Package readPackage() {
-        if (in == null) {
+        if (input == null) {
             return null;
         }
 
-        Package data = null;
+        Package data;
 
         try {
-            data = (Package)in.readObject();
+            data = (Package) input.readObject();
         } catch (ClassNotFoundException error) {
             error.printStackTrace();
             return null;
@@ -78,55 +77,47 @@ public class ConnectionHandler implements Runnable {
     }
 
     public void run() {
-        Package data;
+        Package data = null;
 
         try {
-            in = new ObjectInputStream(socket.getInputStream());
-            out = new ObjectOutputStream(socket.getOutputStream());
+            input = new ObjectInputStream(socket.getInputStream());
+            output = new ObjectOutputStream(socket.getOutputStream());
 
             data = readPackage();
-
-            if (null == data) {
-                System.out.println("Null package received. Terminating.");
-                endConnection();
-                return;
-            }
-
-            if (data instanceof  HandshakePackage) {
-                clientType = ((HandshakePackage)data).getClientType();
-
-                ConnectionHandler.connectionHandlers.add(this);
-
-                if (ClientType.DATA_SOURCE == clientType) {
-                    listen();
-                } else if (ClientType.VISUALISER == clientType) {
-                    // ...
-                } else {
-                    // ...
-                }
-            } else if (data instanceof RequestDataPackage) {
-                ArrayList<PADState> states = db.fetchAll(((RequestDataPackage) data).getResultSetId());
-                for (PADState state : states) {
-                    out.writeObject(new PADPackage(state));
-                }
-                endConnection();
-            } else {
-                System.out.println("Incorrect handshake. Terminating.");
-                endConnection();
-            }
         } catch (IOException error) {
-            System.out.println(String.format("IOException on socket listen: %s", error.toString()));
+            log("IOException on socket listen: %s", error.toString());
+            endConnection();
+        }
+
+        if (null == data) {
+            log("Null package received.");
+            endConnection();
+        } else if (data instanceof  HandshakePackage) {
+            client = ((HandshakePackage)data).getClient();
+
+            registerHandler(this);
+
+            if (Client.DATA_SOURCE == client) {
+                listen();
+            } else if (Client.VISUALISER == client) {
+                // ...
+            } else {
+                // ...
+            }
+        } else if (data instanceof RequestDataPackage) {
+            ArrayList<PADState> states = db.fetchAll(((RequestDataPackage) data).getResultSetId());
+
+            for (PADState state : states) {
+                send(new PADPackage(state));
+            }
+        } else {
+            log("Incorrect handshake.");
             endConnection();
         }
     }
 
     public void listen() {
         Package data;
-
-        long lastPackageTime = System.currentTimeMillis();
-        long timeDelta;
-        long currentTime;
-        long packageTransferTime;
 
         // Create new session
         int sessionId = db.createSession(1, 1);
@@ -135,13 +126,8 @@ public class ConnectionHandler implements Runnable {
         int resultSetId = db.createResultSet(sessionId);
 
         try {
-            while ((data = (Package)in.readObject()) != null) {
-                currentTime = System.currentTimeMillis();
-                timeDelta = currentTime - lastPackageTime;
-                lastPackageTime = currentTime;
-                packageTransferTime = currentTime - data.getSendTime();
-
-                System.out.println(String.format("%s %s %s [Package received]", timeDelta, packageTransferTime, name));
+            while ((data = (Package) input.readObject()) != null) {
+                log("Package received: %s, %s", name, data);
 
                 if (data instanceof PADPackage) {
                     ConnectionHandler.broadcast(data);
@@ -152,11 +138,11 @@ public class ConnectionHandler implements Runnable {
                 }
             }
         } catch (SocketException error) {
-            System.out.println("Ending [2]");
+            log("Ending [2]");
             this.endConnection();
             return;
         } catch (IOException error) {
-            System.out.println("Ending [1]");
+            log("Ending [1]");
             error.printStackTrace();
             this.endConnection();
             return;
@@ -168,39 +154,50 @@ public class ConnectionHandler implements Runnable {
     }
 
     public void send(Package data) {
-        if (null == out) {
-            System.out.println("Cannot write object. No output.");
+        if (null == output) {
+            log("Cannot write object. No output.");
             return;
         }
 
         try {
-            System.out.println("Sending package (forward).");
-            out.writeObject(data);
+            output.writeObject(data);
         } catch (SocketException error) {
-            System.out.println("Socket error. Closing connection.");
+            log("Socket error. Closing connection.");
             endConnection();
         } catch (IOException error) {
-            System.out.println(String.format("IOException on socket writeObject: %s", error.toString()));
+            log("IOException on socket writeObject: %s", error.toString());
             error.printStackTrace();
         }
-
     }
 
-    private static void broadcast(Package data) {
-        for (ConnectionHandler handler : ConnectionHandler.connectionHandlers) {
-            if (ClientType.VISUALISER == handler.clientType) {
-                System.out.println("Forwarding package.");
-                handler.send(data);
+    protected static void registerHandler(ConnectionHandler handler) {
+        synchronized (connectionHandlers) {
+            if (!connectionHandlers.contains(handler)) {
+                connectionHandlers.add(handler);
             }
         }
+    }
 
-        for (ConnectionHandler handler : ConnectionHandler.closeConnectionHandlers) {
-            ConnectionHandler.connectionHandlers.remove(handler);
+    protected static void removeHandler(ConnectionHandler handler) {
+        synchronized (connectionHandlers) {
+            if (connectionHandlers.contains(handler)) {
+                connectionHandlers.remove(handler);
+            }
+        }
+    }
+
+    protected static void broadcast(Package data) {
+        synchronized (connectionHandlers) {
+            for (int i = 0; i < connectionHandlers.size(); ++i) {
+                ConnectionHandler handler = connectionHandlers.get(i);
+                if (Client.VISUALISER == handler.client) {
+                    handler.send(data);
+                }
+            }
         }
     }
 
     public static void handle(Socket socket, String name, DataHandler db) {
-        Thread thread = new Thread(new ConnectionHandler(socket, name, db));
-        thread.start();
+        (new Thread(new ConnectionHandler(socket, name, db))).start();
     }
 }

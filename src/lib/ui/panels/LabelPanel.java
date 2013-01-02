@@ -1,6 +1,6 @@
 package lib.ui.panels;
 
-import lib.Utils;
+import lib.utils.Utils;
 import lib.types.Label;
 import lib.types.LabelConfig;
 import lib.types.PADState;
@@ -45,7 +45,7 @@ public class LabelPanel extends MultiplePanel {
         PADState last = this.values.get(len - 1);
         // Draw the value
         g2d.drawString(
-                String.format("%.2f, %.2f, %.2f", last.getP(), last.getA(), last.getD()),
+                String.format("%.2f, %.2f, %.2f", last.getP().getValue(), last.getA().getValue(), last.getD().getValue()),
                 this.getWidth() - 110, 20);
 
         for (PADState state : getValuesForCurrentBuffer()) {

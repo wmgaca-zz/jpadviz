@@ -1,7 +1,8 @@
 package lib;
 
 import lib.types.PADState;
-import lib.types.packages.PADPackage;
+import lib.types.PADValue;
+import lib.net.packages.PADPackage;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -31,9 +32,9 @@ public class DataHandler {
             ResultSet results = connection.createStatement().executeQuery("SELECT p, a, d, cp, ca, cd, timestamp FROM pad_value WHERE result_set_id = " + resultSetId);
 
             while (results.next()) {
-                states.add(new PADState(results.getFloat(1), results.getFloat(2),
-                                        results.getFloat(3), results.getFloat(4),
-                                        results.getFloat(5), results.getFloat(6),
+                states.add(new PADState(new PADValue(results.getFloat(1), results.getFloat(4)),
+                                        new PADValue(results.getFloat(2), results.getFloat(5)),
+                                        new PADValue(results.getFloat(3), results.getFloat(6)),
                                         results.getLong(7)));
             }
         } catch (SQLException e) {
@@ -47,12 +48,12 @@ public class DataHandler {
         try {
             PreparedStatement stmt;
             stmt = connection.prepareStatement("INSERT INTO pad_value(p, a, d, cp, ca, cd, timestamp, result_set_id) VALUES(?, ?, ?, ?, ?, ?, ?, ?)");
-            stmt.setFloat(1, data.getState().getP());
-            stmt.setFloat(2, data.getState().getA());
-            stmt.setFloat(3, data.getState().getD());
-            stmt.setFloat(4, data.getState().getCP());
-            stmt.setFloat(5, data.getState().getCA());
-            stmt.setFloat(6, data.getState().getCD());
+            stmt.setFloat(1, data.getState().getP().getValue());
+            stmt.setFloat(2, data.getState().getA().getValue());
+            stmt.setFloat(3, data.getState().getD().getValue());
+            stmt.setFloat(4, data.getState().getP().getCertainty());
+            stmt.setFloat(5, data.getState().getA().getCertainty());
+            stmt.setFloat(6, data.getState().getD().getCertainty());
             stmt.setLong(7, data.getState().getTimestamp());
             stmt.setInt(8, resultSetId);
             stmt.executeUpdate();

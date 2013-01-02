@@ -1,6 +1,6 @@
 package lib.types;
 
-public enum ClientType {
+public enum Client {
     DATA_SOURCE,
     VISUALISER
 }

@@ -1,7 +1,7 @@
 package lib.config;
 
-import lib.Utils;
-import lib.types.exceptions.PADConfigException;
+import lib.utils.Utils;
+import lib.exceptions.PADConfigException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;

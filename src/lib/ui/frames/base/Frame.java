@@ -3,7 +3,6 @@ package lib.ui.frames.base;
 import lib.types.LabelConfig;
 import lib.types.PADState;
 import lib.types.Palette;
-import lib.ui.*;
 import lib.ui.Menu;
 import lib.ui.panels.base.Panel;
 
@@ -58,6 +57,7 @@ public abstract class Frame extends JFrame {
         for (Panel panel : panels) {
             panel.feed(state);
         }
+
         panelContainer.repaint();
     }
 
@@ -73,13 +73,24 @@ public abstract class Frame extends JFrame {
 
     protected void init() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);
         initPanelContainer();
         setContentPane(panelContainer);
-        setJMenuBar(lib.ui.Menu.getInstance(this));
+        setJMenuBar(Menu.getInstance(this));
     }
 
     protected abstract void initPanelContainer();
 
-    public abstract void handleMenuAction(Menu.MenuAction action);
+    public void handleMenuAction(Menu.Action action) {
+        switch (action) {
+            case STAY_ON_TOP:
+                toggleStayOnTop();
+                break;
+        }
+    }
+
+    public void toggleStayOnTop() {
+        setAlwaysOnTop(!isAlwaysOnTop());
+    }
 
 }

@@ -1,6 +1,6 @@
 package lib.ui.panels.base;
 
-import lib.Utils;
+import lib.utils.Utils;
 import lib.types.PAD;
 import lib.types.PADState;
 

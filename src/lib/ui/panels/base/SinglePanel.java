@@ -1,16 +1,16 @@
 package lib.ui.panels.base;
 
-import lib.Utils;
+import lib.utils.Utils;
 import lib.types.PAD;
 import lib.types.PADState;
-import lib.types.SinglePADValue;
+import lib.types.PADValue;
 
 import java.awt.*;
 import java.util.ArrayList;
 
 public abstract class SinglePanel extends lib.ui.panels.base.Panel {
 
-    protected ArrayList<SinglePADValue> values = new ArrayList<SinglePADValue>();
+    protected ArrayList<PADValue> values = new ArrayList<PADValue>();
 
     public SinglePanel(PAD.Type type, int width, int height) {
         super(type, width, height);
@@ -21,7 +21,7 @@ public abstract class SinglePanel extends lib.ui.panels.base.Panel {
      */
     @Override
     protected void feedState(PADState state) {
-        values.add(state.getSinglePADValue(type));
+        values.add(state.getPADValue(type));
     }
 
     /**
@@ -30,12 +30,12 @@ public abstract class SinglePanel extends lib.ui.panels.base.Panel {
     @Override
     public abstract void customPaintComponent(Graphics2D g2d);
 
-    public ArrayList<SinglePADValue> getValuesForTime(long startTime, long endTime) {
-        ArrayList<SinglePADValue> list = new ArrayList<SinglePADValue>();
+    public ArrayList<PADValue> getValuesForTime(long startTime, long endTime) {
+        ArrayList<PADValue> list = new ArrayList<PADValue>();
 
         boolean found = false;
 
-        for (SinglePADValue value : Utils.reverseSPVList(values)) {
+        for (PADValue value : Utils.reverseSPVList(values)) {
             if (value.timestamp >= startTime && value.timestamp <= endTime) {
                 list.add(value);
                 found = true;
@@ -47,14 +47,14 @@ public abstract class SinglePanel extends lib.ui.panels.base.Panel {
         return Utils.reverseSPVList(list);
     }
 
-    public ArrayList<SinglePADValue> getValuesForCurrentBuffer() {
+    public ArrayList<PADValue> getValuesForCurrentBuffer() {
         long endTime = System.currentTimeMillis();
         long startTime = endTime - buffer * 1000;
 
         return getValuesForTime(startTime, endTime);
     }
 
-    public ArrayList<SinglePADValue> getValuesPreCurrentBuffer() {
+    public ArrayList<PADValue> getValuesPreCurrentBuffer() {
         long startTime = 0;
         long endTime = System.currentTimeMillis() - buffer * 1000;
 

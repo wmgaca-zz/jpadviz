@@ -1,17 +1,16 @@
-import lib.Utils;
+import lib.ui.frames.DynamicFrame;
+import lib.utils.Utils;
 import lib.config.VisualiserConfig;
 import lib.forms.MainWindowForm;
-import lib.types.ClientType;
+import lib.types.Client;
 import lib.types.LabelConfig;
-import lib.types.packages.*;
-import lib.types.packages.base.Package;
-import lib.ui.frames.FullDynamicFrame;
-import lib.ui.frames.MinimizedDynamicFrame;
+import lib.net.packages.*;
+import lib.net.packages.base.Package;
 import lib.ui.frames.base.Frame;
-
-import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
+
+import static lib.utils.Logging.log;
 
 public class PadVisualiser {
 
@@ -29,14 +28,12 @@ public class PadVisualiser {
     protected String serverHost;
     protected int serverPort;
     protected Socket socket;
-    protected ObjectOutputStream outStream;
-    protected ObjectInput inStream;
+    protected ObjectOutputStream output;
+    protected ObjectInput input;
 
     public static void main(String[] args) {
-
         // Read the labels
         LabelConfig labelConfig = new LabelConfig(labelConfigFile);
-
 
         PadVisualiser padVisualiser = new PadVisualiser(labelConfig);
         padVisualiser.run();
@@ -47,29 +44,30 @@ public class PadVisualiser {
     }
 
     public void setupNetworking() {
-        this.serverHost = PadDummyClient.config.getHost();
-        this.serverPort = PadDummyClient.config.getPort();
+        serverHost = PadDummyClient.config.getHost();
+        serverPort = PadDummyClient.config.getPort();
 
-        System.out.println(String.format("Connecting to %s:%s", this.serverHost, this.serverPort));
-
+        log("Connecting to %s:%s", this.serverHost, this.serverPort);
         while (true) {
             try {
-                this.socket = new Socket(this.serverHost, this.serverPort);
+                socket = new Socket(serverHost, serverPort);
             } catch (IOException e) {
-                System.out.println("Cannot connect. Retrying...");
+                log("Cannot connect. Retrying...");
                 continue;
             }
-
-            System.out.println(String.format("Connection established with %s:%s", this.serverHost, this.serverPort));
+            log("Connection established with %s:%s", this.serverHost, this.serverPort);
             break;
         }
 
         try {
-            this.outStream = new ObjectOutputStream(this.socket.getOutputStream());
-            this.inStream = new ObjectInputStream(this.socket.getInputStream());
+            output = new ObjectOutputStream(socket.getOutputStream());
+            input = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
             Utils.exitOnException(e);
+            log("Cannot get I/O");
         }
+
+        log("Network set up.");
     }
 
     protected void closeNetworking() {
@@ -81,14 +79,14 @@ public class PadVisualiser {
     }
 
     protected boolean send(Package data) {
-        if (null == this.outStream) {
+        if (null == this.output) {
             this.setupNetworking();
         }
 
         try {
-            this.outStream.writeObject(data);
+            this.output.writeObject(data);
         } catch (IOException e) {
-            System.out.println(String.format("Cannot send package: %s", data));
+            log("Cannot send package: %s", data);
             return false;
         }
 
@@ -99,11 +97,13 @@ public class PadVisualiser {
         Package data = null;
 
         try {
-            data = (Package)this.inStream.readObject();
+            data = (Package) input.readObject();
         } catch (ClassNotFoundException error) {
-            System.out.println(String.format("Package type not recognized: %s", data));
+            log("Package type not recognized: %s", data);
         } catch (IOException error) {
-            System.out.println("Cannot read package...");
+            error.printStackTrace();
+            log("Cannot read package...");
+
             return null;
         }
 
@@ -115,54 +115,43 @@ public class PadVisualiser {
             PADPackage pad = (PADPackage)data;
             frame.feed(((PADPackage) data).getState());
         }
-
-        System.out.println(String.format("Package: %s", data));
     }
 
     protected void initUI() {
-        if (config.getLayout().equals("min")) {
-            frame = new MinimizedDynamicFrame(labelConfig);
-        } else {
-            frame = new FullDynamicFrame(labelConfig);
-        }
-        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.frame.setVisible(true);
+        frame = new DynamicFrame(labelConfig);
     }
 
     protected void runRealTime() {
-        send(new HandshakePackage(ClientType.VISUALISER));
-
+        send(new HandshakePackage(Client.VISUALISER));
         Package data;
-        while (!this.mainForm.getExitApp() && (data = this.read()) != null) {
+        while (!mainForm.getExitApp() && (data = read()) != null) {
             dispatchPackage(data);
         }
-
         send(new EndPackage());
     }
 
     protected void runLoad() {
         send(new RequestDataPackage(-1));
-
         Package data;
         while (!this.mainForm.getExitApp() && (data = this.read()) != null) {
             dispatchPackage(data);
         }
-
-        System.out.println("Fetched!");
-
+        log("Fetched!");
         send(new EndPackage());
     }
 
     public void run() {
         this.setupNetworking();
         this.initUI();
-
         if (config.getMode().equals("auto")) {
             runRealTime();
         } else {
             runLoad();
         }
-
         this.closeNetworking();
+    }
+
+    public void toggleLayout() {
+        frame.setVisible(true);
     }
 }

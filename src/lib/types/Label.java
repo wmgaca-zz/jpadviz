@@ -1,10 +1,12 @@
 package lib.types;
 
-import lib.Utils;
+import lib.utils.Utils;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.awt.*;
+
+import static lib.utils.Logging.log;
 
 public class Label {
 
@@ -19,10 +21,10 @@ public class Label {
     public float dMax;
 
     public Label() {
-        this.name = "Unknown";
+        name = "Unknown";
 
-        this.pMin = this.aMin = this.dMin = -1.0f;
-        this.pMax = this.aMax = this.dMax = 1.0f;
+        pMin = aMin = dMin = -1.0f;
+        pMax = aMax = dMax = 1.0f;
     }
 
     public Label(String name) {
@@ -43,69 +45,44 @@ public class Label {
     }
 
     public String toString() {
-        return String.format(
-                "<Label(name=%s,p=[%s,%s],a=[%s,%s],d=[%s,%s])>",
-                this.name, this.pMin, this.pMax, this.aMin, this.aMax, this.dMin, this.dMax);
+        return String.format("<Label(name=%s,p=[%s,%s],a=[%s,%s],d=[%s,%s])>",
+                             name, pMin, pMax, aMin, aMax, dMin, dMax);
     }
 
     public void setPMax(String value) {
-        if (value == null) {
-            return;
-        }
-
-        this.pMax = Float.parseFloat(value);
+        pMax = Float.parseFloat(value);
     }
 
     public void setPMin(String value) {
-        if (value == null) {
-            return;
-        }
-
-        this.pMin = Float.parseFloat(value);
+        pMin = Float.parseFloat(value);
     }
 
     public void setAMax(String value) {
-        if (value == null) {
-            return;
-        }
-
         this.aMax = Float.parseFloat(value);
     }
 
     public void setAMin(String value) {
-        if (value == null) {
-            return;
-        }
-
         this.aMin = Float.parseFloat(value);
     }
 
     public void setDMax(String value) {
-        if (value == null) {
-            return;
-        }
-
         this.dMax = Float.parseFloat(value);
     }
 
     public void setDMin(String value) {
-        if (value == null) {
-            return;
-        }
-
         this.dMin = Float.parseFloat(value);
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
     public Color getColor() {
-        return this.color;
+        return color;
     }
 
     public void setColor(Color value) {
-        this.color = value;
+        color = value;
     }
 
 
@@ -123,8 +100,10 @@ public class Label {
 
         String hexColor = getAttrFromNode(labelNode, "color");
         if (null == hexColor) {
+            log("Gray!");
             label.setColor(Color.gray);
         } else {
+            log("From hex!");
             label.setColor(Color.decode(hexColor));
         }
 
@@ -149,11 +128,11 @@ public class Label {
     }
 
     public boolean match(PADState state) {
-        if (state.getP() > this.pMax || state.getP() < this.pMin) {
+        if (state.getP().getValue() > pMax || state.getP().getValue() < pMin) {
             return false;
-        } else if (state.getA() > this.aMax || state.getA() < this.aMin) {
+        } else if (state.getA().getValue() > aMax || state.getA().getValue() < aMin) {
             return false;
-        } else if (state.getD() > this.dMax || state.getD() < this.dMin) {
+        } else if (state.getD().getValue() > dMax || state.getD().getValue() < dMin) {
             return false;
         }
 
@@ -165,7 +144,7 @@ public class Label {
         float centerA = this.pMin + (this.aMax - this.aMin) / 2;
         float centerD = this.pMin + (this.dMax - this.dMin) / 2;
 
-        return Utils.abs(state.getP() - centerP) + Utils.abs(state.getA() - centerA) + Utils.abs(state.getD() - centerD);
+        return Utils.abs(state.getP().getValue() - centerP) + Utils.abs(state.getA().getValue() - centerA) + Utils.abs(state.getD().getValue() - centerD);
     }
 
 }

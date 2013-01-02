@@ -1,8 +1,8 @@
 package lib.types;
 
-import lib.Utils;
+import lib.utils.Utils;
 import lib.config.ConfigHandler;
-import lib.types.exceptions.PADConfigException;
+import lib.exceptions.PADConfigException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -39,14 +39,17 @@ public class LabelConfig {
     }
 
     public Label getMatchingLabel(PADState state) {
-        List<Label> matching = new ArrayList<Label>();
+        //List<Label> matching = new ArrayList<Label>();
 
         for (Label label : this.labels) {
               if (label.match(state)) {
-                  matching.add(label);
+                  return label;
               }
         }
 
+        return new Label("Empty");
+
+        /*
         if (0 == matching.size()) {
             return new Label("Empty");
         }
@@ -66,6 +69,7 @@ public class LabelConfig {
         }
 
         return result;
+        //*/
     }
 
 }

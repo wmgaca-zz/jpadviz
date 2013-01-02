@@ -3,6 +3,7 @@ package lib.types;
 import java.awt.*;
 
 public class Palette {
+
     public static Color transparent = new Color(0, 0, 0, 0f);
     public static Color blue = new Color(0, 0, 255);
     public static Color red = new Color(255, 0, 0);

@@ -1,21 +1,25 @@
 package lib.ui.frames;
 
 import lib.types.LabelConfig;
-import lib.types.PAD;
 import lib.types.Palette;
 import lib.ui.Menu;
+import lib.ui.frames.base.Frame;
 import lib.ui.panels.LabelPanel;
-import lib.ui.panels.MultiplePADPanel;
-import lib.ui.panels.SinglePADPanel;
-import lib.ui.panels.SingleRadarPanel;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 
+import java.util.ArrayList;
+
+import static lib.utils.Logging.log;
+
 public class MinimizedDynamicFrame extends lib.ui.frames.base.Frame {
 
-    public MinimizedDynamicFrame(LabelConfig labelConfig) {
+    protected ArrayList<Frame> frames;
+
+    public MinimizedDynamicFrame(ArrayList<Frame> frames, LabelConfig labelConfig) {
         super(labelConfig);
+        this.frames = frames;
     }
 
     @Override
@@ -37,15 +41,20 @@ public class MinimizedDynamicFrame extends lib.ui.frames.base.Frame {
     }
 
     @Override
-    public void handleMenuAction(Menu.MenuAction action) {
+    public void handleMenuAction(Menu.Action action) {
         switch (action) {
-            case StayOnTop:
-                System.out.println("Stay on top!!!");
-                setAlwaysOnTop(!isAlwaysOnTop());
+            case STAY_ON_TOP:
+                log("Stay on top!!! 111 MIBB");
+                log("frames %s: %s", frames.size(), frames);
+                for (Frame frame : frames) {
+                    log("Toggle frame %s", frame);
+                    frame.setVisible(!frame.isVisible());
+                }
                 break;
+            //setAlwaysOnTop(isAlwaysOnTop());
+            //break;
             default:
-                System.out.println("Unknown menu action.");
-
+                log("Unknown menu action.");
         }
     }
 }

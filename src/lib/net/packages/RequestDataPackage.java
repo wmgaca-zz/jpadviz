@@ -1,13 +1,11 @@
-package lib.types.packages;
+package lib.net.packages;
 
-import lib.types.PackageType;
-
-public class RequestDataPackage extends lib.types.packages.base.Package {
+public class RequestDataPackage extends lib.net.packages.base.Package {
 
     protected int resultSetId;
 
     public RequestDataPackage(int resultSetId) {
-        super(PackageType.DATA);
+        super(Type.DATA);
 
         this.resultSetId = resultSetId;
     }

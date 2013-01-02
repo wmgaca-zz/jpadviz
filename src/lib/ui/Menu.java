@@ -1,7 +1,6 @@
 package lib.ui;
 
-import com.sun.servicetag.SystemEnvironment;
-import lib.Utils;
+import lib.utils.Utils;
 import lib.ui.frames.base.Frame;
 
 import javax.swing.*;
@@ -11,11 +10,14 @@ import java.awt.event.KeyEvent;
 
 public final class Menu {
 
-    public enum MenuAction {
-        StayOnTop
+    public enum Action {
+        STAY_ON_TOP,
+        LAYOUT_FULL,
+        LAYOUT_MIN_LABEL,
+        LAYOUT_MIN_RADAR
     }
 
-    private static volatile JMenuBar instance = null;
+    private static JMenuBar instance = null;
 
     public static JMenuBar getInstance(final Frame frame) {
         if (instance == null) {
@@ -60,7 +62,7 @@ public final class Menu {
         stayOnTop.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                frame.handleMenuAction(MenuAction.StayOnTop);
+                frame.handleMenuAction(Action.STAY_ON_TOP);
                 // Revert menu item's selection
                 ((JCheckBoxMenuItem) actionEvent.getSource()).setState(
                     (((JCheckBoxMenuItem) actionEvent.getSource()).getState())
@@ -68,7 +70,67 @@ public final class Menu {
             }
         });
 
+        // Layout
+        JMenu layout = new JMenu("Layout");
+        layout.setMnemonic(KeyEvent.VK_L);
+
+        final JCheckBoxMenuItem fullLayout = new JCheckBoxMenuItem("Full");
+        final JCheckBoxMenuItem minLabelLayout = new JCheckBoxMenuItem("Label");
+        final JCheckBoxMenuItem minRadarLayout = new JCheckBoxMenuItem("Radar");
+        fullLayout.setState(true);
+        fullLayout.setMnemonic(KeyEvent.VK_F);
+        fullLayout.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                frame.handleMenuAction(Action.LAYOUT_FULL);
+                // Revert menu item's selection
+                ((JCheckBoxMenuItem) actionEvent.getSource()).setState(
+                        (((JCheckBoxMenuItem) actionEvent.getSource()).getState())
+                );
+                fullLayout.setState(true);
+                minLabelLayout.setState(false);
+                minRadarLayout.setState(false);
+            }
+        });
+
+        minLabelLayout.setState(false);
+        minLabelLayout.setMnemonic(KeyEvent.VK_F);
+        minLabelLayout.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                frame.handleMenuAction(Action.LAYOUT_MIN_LABEL);
+                // Revert menu item's selection
+                ((JCheckBoxMenuItem) actionEvent.getSource()).setState(
+                        (((JCheckBoxMenuItem) actionEvent.getSource()).getState())
+                );
+                fullLayout.setState(false);
+                minLabelLayout.setState(true);
+                minRadarLayout.setState(false);
+            }
+        });
+
+        minRadarLayout.setState(false);
+        minRadarLayout.setMnemonic(KeyEvent.VK_F);
+        minRadarLayout.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                frame.handleMenuAction(Action.LAYOUT_MIN_RADAR);
+                // Revert menu item's selection
+                ((JCheckBoxMenuItem) actionEvent.getSource()).setState(
+                        (((JCheckBoxMenuItem) actionEvent.getSource()).getState())
+                );
+                fullLayout.setState(false);
+                minLabelLayout.setState(false);
+                minRadarLayout.setState(true);
+            }
+        });
+
+        layout.add(fullLayout);
+        layout.add(minLabelLayout);
+        layout.add(minRadarLayout);
+
         view.add(stayOnTop);
+        view.add(layout);
 
         return view;
     }
@@ -83,7 +145,6 @@ public final class Menu {
     }
 
     private Menu() {
-
     }
 
 

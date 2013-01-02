@@ -6,6 +6,6 @@
 
     <!-- compact: "min"
          full window: any other value -->
-    <layout>-[e</layout>
+    <layout></layout>
 
 </settings>

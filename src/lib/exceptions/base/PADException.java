@@ -1,4 +1,4 @@
-package lib.types.exceptions.base;
+package lib.exceptions.base;
 
 public abstract class PADException extends Exception {
 

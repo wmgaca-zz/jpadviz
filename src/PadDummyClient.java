@@ -1,9 +1,9 @@
-import lib.Utils;
+import lib.utils.Utils;
 import lib.config.ServerConfig;
-import lib.types.ClientType;
-import lib.types.packages.EndPackage;
-import lib.types.packages.HandshakePackage;
-import lib.types.packages.PADPackage;
+import lib.types.Client;
+import lib.net.packages.EndPackage;
+import lib.net.packages.HandshakePackage;
+import lib.net.packages.PADPackage;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -18,24 +18,24 @@ public class PadDummyClient {
         String host = PadDummyClient.config.getHost();
         int port = PadDummyClient.config.getPort();
 
+        ObjectOutputStream out = null;
+        ObjectInputStream in = null;
+        Socket socket = null;
+
         try {
-            Socket socket = new Socket(host, port);
+            socket = new Socket(host, port);
 
             System.out.println(String.format("Connection established with %s:%s", host, port));
 
-            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+            out = new ObjectOutputStream(socket.getOutputStream());
+            in = new ObjectInputStream(socket.getInputStream());
 
-            out.writeObject(new HandshakePackage(ClientType.DATA_SOURCE));
+            out.writeObject(new HandshakePackage(Client.DATA_SOURCE));
 
-            for (int i = 0; i < 100; ++i) {
+            while (true) {
                 out.writeObject(PADPackage.getRandom());
                 Thread.sleep(Utils.getRandomGenerator().nextInt(2500) + 500);
             }
-
-            out.writeObject(new EndPackage());
-
-            socket.close();
 
         } catch (UnknownHostException error) {
             Utils.exitOnException(
@@ -45,6 +45,21 @@ public class PadDummyClient {
             Utils.exitOnException(
                     error,
                     String.format("No I/O"));
+        } finally {
+            if (null != out) {
+                try {
+                    out.writeObject(new EndPackage());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (null != socket) {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

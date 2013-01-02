@@ -16,6 +16,8 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="ini4j-0.5.2" level="project" />
+    <orderEntry type="library" name="log4j-1.2.17" level="project" />
   </component>
 </module>
 

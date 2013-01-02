@@ -1,5 +1,5 @@
 import lib.DataHandler;
-import lib.Utils;
+import lib.utils.Utils;
 import lib.config.ServerConfig;
 import lib.net.ConnectionHandler;
 
@@ -9,6 +9,8 @@ import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
+
+import static lib.utils.Logging.log;
 
 public class PadServer {
 
@@ -27,12 +29,12 @@ public class PadServer {
     }
 
     public static void init() {
-        System.out.println("Initializing...");
+        log("Initializing...");
 
         if (!PadServer.config.validate()) {
             Utils.exitOnException(null, "Server config file contains errors.");
         } else {
-            System.out.println("Server config file validation: OK.");
+            log("Server config file validation: OK.");
         }
 
         try {
@@ -59,22 +61,24 @@ public class PadServer {
                     String.format("Could not listen on port %s", PadServer.config.getPort()));
         }
 
-        System.out.println(String.format("Listening on port %s", PadServer.config.getPort()));
+        assert null != listener;
+
+        log("Listening on port %s", PadServer.config.getPort());
 
         while (true) {
-            Socket socket;
+            Socket socket = null;
 
             try {
                 socket = listener.accept();
             } catch (IOException error) {
-                System.out.println(String.format("Could not accept on port %s", PadServer.config.getPort()));
+                log("Could not accept on port %s", PadServer.config.getPort());
                 continue;
             } catch (NullPointerException error) {
-                System.out.println(String.format("Could not accept on port %s", PadServer.config.getPort()));
+                log("Could not accept on port %s", PadServer.config.getPort());
                 continue;
             }
 
-            System.out.println(String.format("Handling new connection on %s.", PadServer.config.getPort()));
+            log("Handling new connection on %s.", PadServer.config.getPort());
 
             ConnectionHandler.handle(socket, String.format("Conn#%d", PadServer.connections), PadServer.db);
             ++PadServer.connections;

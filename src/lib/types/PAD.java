@@ -1,6 +1,7 @@
 package lib.types;
 
 import java.util.HashMap;
+import static lib.utils.Logging.log;
 
 public class PAD {
 
@@ -16,8 +17,8 @@ public class PAD {
     }
 
     public static String getName(PAD.Type type) {
-        System.out.println("type: " + type.toString());
-        System.out.println("got: " + names.get(type));
+        log("type: %s", type.toString());
+        log("got: %s", names.get(type));
         return PAD.names.get(type);
     }
 }

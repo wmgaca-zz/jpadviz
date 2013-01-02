@@ -8,15 +8,15 @@ public class MainWindowForm {
     private boolean exitApp = false;
 
     public MainWindowForm() {
-        this.mainPanel.setPreferredSize(new Dimension(800, 600));
+        mainPanel.setPreferredSize(new Dimension(800, 600));
     }
 
     public JPanel getMainPanel() {
-        return this.mainPanel;
+        return mainPanel;
     }
 
     public boolean getExitApp() {
-        return this.exitApp;
+        return exitApp;
     }
 
 }

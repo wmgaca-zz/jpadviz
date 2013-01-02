@@ -4,74 +4,66 @@ import java.io.Serializable;
 
 public class PADState implements Serializable {
 
-    protected float p;
-    protected float a;
-    protected float d;
-    protected float cp;
-    protected float ca;
-    protected float cd;
+    /**
+     * Pleasure
+     */
+    protected PADValue p;
 
+    /**
+     * Arousal
+     */
+    protected PADValue a;
+
+    /**
+     * Dominance
+     */
+    protected PADValue d;
+
+    /**
+     * Measurement timestamp.
+     */
     protected long timestamp;
 
-    public PADState() {
+    protected PADState() {
         this.timestamp = System.currentTimeMillis();
     }
 
-    public PADState(float p, float a, float d, float cp, float ca, float cd) {
+    public PADState(PADValue p, PADValue a, PADValue d) {
         this();
 
         this.p = p;
         this.a = a;
         this.d = d;
-
-        this.cp = cp;
-        this.ca = ca;
-        this.cd = cd;
     }
 
-    public PADState(float p, float a, float d, float cp, float ca, float cd, long timestamp) {
-        this(p, a, d, cp, ca, cd);
+    public PADState(PADValue p, PADValue a, PADValue d, long timestamp) {
+        this(p, a, d);
 
         this.timestamp = timestamp;
     }
 
-    public float getP() {
-        return this.p;
+    public PADValue getP() {
+        return p;
     }
 
-    public float getCP() {
-        return this.cp;
-    }
-
-    public float getA() {
-        return this.a;
-    }
-
-    public float getCA() {
-        return this.ca;
-    }
-
-    public float getD() {
-        return this.d;
-    }
-
-    public float getCD() {
-        return this.cd;
-    }
-
-    public void setP(float p, float cp) {
+    public void setP(PADValue p) {
         this.p = p;
-        this.cp = cp;
     }
 
-    public void setA(float a, float ca) {
+    public PADValue getA() {
+        return a;
+    }
+
+    public void setA(PADValue a) {
         this.a = a;
-        this.ca = ca;
     }
 
-    public void setD(float d, float cd) {
+    public PADValue getD() {
+        return d;
+    }
+
+    public void setD(PADValue d) {
         this.d = d;
-        this.cd = cd;
     }
 
     public long getTimestamp() {
@@ -82,14 +74,14 @@ public class PADState implements Serializable {
         this.timestamp = value;
     }
 
-    public SinglePADValue getSinglePADValue(PAD.Type type) {
+    public PADValue getPADValue(PAD.Type type) {
         switch (type) {
             case P:
-                return new SinglePADValue(this.getP(), this.getCP(), this.getTimestamp());
+                return p;
             case A:
-                return new SinglePADValue(this.getA(), this.getCA(), this.getTimestamp());
+                return a;
             case D:
-                return new SinglePADValue(this.getD(), this.getCD(), this.getTimestamp());
+                return d;
             default:
                 return null;
         }
@@ -97,7 +89,10 @@ public class PADState implements Serializable {
 
     @Override
     public String toString() {
-        return String.format(
-                "<PADState(p=%s/%s,a=%s/%s,d=%s/%s)", this.p, this.cp, this.a, this.ca, this.d, this.cd);
+        return String.format("<PADState(p=%s,a=%s,d=%s)", p, a, d);
+    }
+
+    public static PADState getRandom() {
+        return new PADState(PADValue.getRandom(), PADValue.getRandom(), PADValue.getRandom());
     }
 }
