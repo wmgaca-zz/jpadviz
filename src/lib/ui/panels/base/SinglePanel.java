@@ -13,7 +13,11 @@ public abstract class SinglePanel extends lib.ui.panels.base.Panel {
     protected ArrayList<PADValue> values = new ArrayList<PADValue>();
 
     public SinglePanel(PAD.Type type, int width, int height) {
-        super(type, width, height);
+        super(type, width, height, true);
+    }
+
+    public SinglePanel(PAD.Type type, int width, int height, boolean isRealTime) {
+        super(type, width, height, isRealTime);
     }
 
     /**
@@ -59,5 +63,12 @@ public abstract class SinglePanel extends lib.ui.panels.base.Panel {
         long endTime = System.currentTimeMillis() - buffer * 1000;
 
         return getValuesForTime(startTime, endTime);
+    }
+
+    public void autoTime() {
+        if (!isRealTime && values.size() > 0) {
+            startTime = values.get(0).getTimestamp();
+            endTime = startTime + buffer;
+        }
     }
 }

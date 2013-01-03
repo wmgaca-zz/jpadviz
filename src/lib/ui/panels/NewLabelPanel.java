@@ -1,28 +1,22 @@
+
 package lib.ui.panels;
 
-import lib.utils.Utils;
+import lib.types.*;
 import lib.types.Label;
-import lib.types.LabelConfig;
-import lib.types.PADState;
-import lib.types.Palette;
-import lib.ui.Margin;
-import lib.ui.PanelUpdater;
-import lib.ui.panels.base.MultiplePanel;
+import lib.ui.panels.base.BasePanel;
+import lib.utils.Utils;
+import static lib.utils.Logging.log;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
-public class LabelPanel extends MultiplePanel {
+public class NewLabelPanel extends BasePanel {
 
-    protected static LabelPanel instance = null;
+    protected static NewLabelPanel instance = null;
 
-    public static LabelPanel getInstance(int width, int height, LabelConfig labelConfig) {
-        return getInstance(width, height, labelConfig, true);
-    }
-
-    public static LabelPanel getInstance(int width, int height, LabelConfig labelConfig, boolean isRealTime) {
+    public static NewLabelPanel getInstance(int width, int height, LabelConfig labelConfig) {
         if (null == instance) {
-            instance = new LabelPanel(width, height, labelConfig, isRealTime);
+            instance = new NewLabelPanel(width, height, labelConfig);
         }
 
         return instance;
@@ -30,33 +24,24 @@ public class LabelPanel extends MultiplePanel {
 
     protected LabelConfig labelConfig;
 
-    protected int buffer = 15;
-
-    public LabelPanel(int width, int height, LabelConfig labelConfig) {
-        this(width, height, labelConfig, true);
-    }
-
-    public LabelPanel(int width, int height, LabelConfig labelConfig, boolean isRealTime) {
-        super(width, height, isRealTime);
-
-        this.margin = new Margin(10, 10, 10, 50);
+    public NewLabelPanel(int width, int height, LabelConfig labelConfig) {
+        super(PAD.Type.PAD, width, height);
 
         this.labelConfig = labelConfig;
-        PanelUpdater.handle(this);
+        this.margin.right = 50;
     }
 
     @Override
     public void customPaintComponent(Graphics2D g2d) {
-        if (0 == values.size()) {
-            return;
-        }
-
         // Draw bottom Y line
         g2d.setColor(Palette.black);
         g2d.drawLine(margin.left, margin.top + getH(), getWidth() - margin.right, margin.top + getH());
 
-        for (PADState state : getValuesForCurrentBuffer()) {
-            int x = getXForTime(state.getTimestamp(), getCurrentStartTime(), getCurrentEndTime());
+        log("size: %s", data.getCurrentValues().size());
+
+        for (PADState state : data.getCurrentValues()) {
+
+            int x = getXForTime(state.getTimestamp(), data.getCurrentStartTime(), data.getCurrentEndTime());
 
             g2d.setColor(Palette.black);
 

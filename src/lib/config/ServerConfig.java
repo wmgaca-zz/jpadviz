@@ -2,6 +2,8 @@ package lib.config;
 
 import java.io.File;
 
+import static lib.utils.Logging.log;
+
 public class ServerConfig extends PadConfig {
 
     public ServerConfig(File configFile) {
@@ -36,10 +38,9 @@ public class ServerConfig extends PadConfig {
         boolean result = true;
 
         for (String field : fields) {
-            System.out.println(field);
+            log(field);
             if (null == get(field)) {
-                System.out.println(
-                        String.format("Config value missing: %s", field));
+                log("Config value missing: %s", field);
                 result = false;
             }
         }

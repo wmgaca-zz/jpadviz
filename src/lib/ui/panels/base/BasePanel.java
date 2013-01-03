@@ -1,6 +1,7 @@
 package lib.ui.panels.base;
 
 import lib.types.PAD;
+import lib.types.PADDataHandler;
 import lib.types.PADState;
 import lib.ui.Margin;
 import lib.ui.NewPanelUpdater;
@@ -11,27 +12,7 @@ import java.awt.*;
 /**
  * Basic type for all panels used by the visualiser.
  */
-public abstract class Panel extends JPanel {
-
-    /**
-     *
-     */
-    protected boolean isRealTime = true;
-
-    /**
-     *
-     */
-    protected long startTime;
-
-    /**
-     *
-     */
-    protected long endTime;
-
-    /**
-     * Time span in seconds.
-     */
-    protected int buffer = 15;
+public abstract class BasePanel extends JPanel {
 
     /**
      * Data type visualised by the widget.
@@ -48,6 +29,8 @@ public abstract class Panel extends JPanel {
      */
     protected Margin margin = new Margin(10, 10, 10, 10);
 
+    protected PADDataHandler data = PADDataHandler.getInstance();
+
     /**
      * Initializes the widget.
      *
@@ -55,7 +38,7 @@ public abstract class Panel extends JPanel {
      * @param width Widget's width resolution (in pixels)
      * @param height Widget's height resolution (in pixels)
      */
-    public Panel(PAD.Type type, int width, int height) {
+    public BasePanel(PAD.Type type, int width, int height) {
         this(type, width, height, true);
     }
 
@@ -66,28 +49,17 @@ public abstract class Panel extends JPanel {
      * @param width Widget's width resolution (in pixels)
      * @param height Widget's height resolution (in pixels)
      */
-    public Panel(PAD.Type type, int width, int height, boolean isRealTime) {
-        this.setPreferredSize(new Dimension(width, height));
+    public BasePanel(PAD.Type type, int width, int height, boolean isRealTime) {
+        setPreferredSize(new Dimension(width, height));
         this.type = type;
         this.label = PAD.getName(type);
-        this.isRealTime = isRealTime;
+
+        NewPanelUpdater.handle(this);
     }
 
     /**
-     * Update widget's data with a new state. This method is called by feed().
-     *
-     * @see #feed(lib.types.PADState)
-     * @param state State
      */
-    protected abstract void feedState(PADState state);
-
-    /**
-     * Update widget's data with a new state.
-     *
-     * @param state State
-     */
-    public final void feed(PADState state) {
-        feedState(state);
+    public final void update() {
         repaint();
     }
 
@@ -114,8 +86,9 @@ public abstract class Panel extends JPanel {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                              RenderingHints.VALUE_ANTIALIAS_ON);
 
-
-        this.customPaintComponent((Graphics2D)graphics);
+        if (!data.isEmpty()) {
+            customPaintComponent((Graphics2D) graphics);
+        }
     }
 
     /**
@@ -124,7 +97,7 @@ public abstract class Panel extends JPanel {
      * @return Drawing area width in pixels.
      */
     public int getW() {
-        return this.getWidth() - this.margin.left - this.margin.right;
+        return getWidth() - margin.left - margin.right;
     }
 
     /**
@@ -133,7 +106,7 @@ public abstract class Panel extends JPanel {
      * @return Drawing area height in pixels.
      */
     public int getH() {
-        return this.getHeight() - this.margin.top - this.margin.bottom;
+        return getHeight() - margin.top - margin.bottom;
     }
 
     /**
@@ -172,61 +145,4 @@ public abstract class Panel extends JPanel {
         double relativeTime = (double)(time - startTime);
         return margin.left + (int)((relativeTime / timeSpan) * (double)getW());
     }
-
-    /**
-     * Event's Y coordinate based on its value (larger value -> lower Y coordinate -> higher on the screen)
-     *
-     * @param value Event's value.
-     *
-     * @return Event's Y coordinate.
-     */
-    final public int getYForValue(float value) {
-        return getCenterY() + (int)(getH() * value / 2) * -1;
-    }
-
-    public long getCurrentBuffer() {
-        if (isRealTime) {
-            return buffer;
-        } else {
-            return getCurrentEndTime() - getCurrentStartTime();
-        }
-    }
-
-    public long getCurrentStartTime() {
-        if (isRealTime) {
-            return getCurrentEndTime() - buffer * 1000;
-        } else {
-            return startTime;
-        }
-    }
-
-    public long getCurrentEndTime() {
-        if (isRealTime) {
-            return System.currentTimeMillis();
-        } else {
-            return endTime;
-        }
-    }
-
-    public long getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(long start) {
-        startTime = start;
-    }
-
-    public long getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(long end) {
-        endTime = end;
-    }
-
-    public boolean isRealTime() {
-        return isRealTime;
-    }
-
-    public abstract void autoTime();
 }

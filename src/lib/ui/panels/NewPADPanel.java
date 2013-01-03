@@ -3,23 +3,16 @@ package lib.ui.panels;
 import lib.types.PAD;
 import lib.types.PADValue;
 import lib.types.Palette;
-import lib.ui.PanelUpdater;
-import lib.ui.panels.base.SinglePanel;
+import lib.ui.panels.base.BasePanel;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 
-public class SinglePADPanel extends SinglePanel {
+public class NewPADPanel extends BasePanel {
 
-    public SinglePADPanel(PAD.Type type, int width, int height) {
-        this(type, width, height, true);
-    }
-
-    public SinglePADPanel(PAD.Type type, int width, int height, boolean isRealTime) {
-        super(type, width, height, isRealTime);
-
-        PanelUpdater.handle(this);
+    public NewPADPanel(PAD.Type type, int width, int height) {
+        super(type, width, height);
     }
 
     private void drawPolygon(int x, int y, int prevX, int prevY, PADValue currentValue, PADValue prevValue, Graphics2D g2d) {
@@ -51,18 +44,8 @@ public class SinglePADPanel extends SinglePanel {
 
     @Override
     public void customPaintComponent(Graphics2D g2d) {
-        int len = values.size();
-
-        if (0 == len) {
-            return;
-        }
-
-        //long currentTime = System.currentTimeMillis();
-        //long startTime = currentTime - buffer * 1000;
-
-        ArrayList<PADValue> padValues = getValuesForCurrentBuffer();
-
-        PADValue lastValue = padValues.get(padValues.size() - 1);
+        ArrayList<PADValue> values = data.getCurrentValues(type);
+        PADValue last = values.get(values.size() - 1);
 
         // Draw -1, 0 and 1 Y lines
         g2d.setColor(Palette.black);
@@ -72,13 +55,13 @@ public class SinglePADPanel extends SinglePanel {
 
         // Draw the value
         g2d.drawString(
-                String.format("%s: %.2f (%.2f)", label, lastValue.value, lastValue.certainty),
+                String.format("%s: %.2f (%.2f)", label, last.getValue(), last.getCertainty()),
                 this.getWidth() - 90, 25);
 
 
         PADValue prevValue = null;
 
-        if (padValues.size() == 0) {
+        if (values.size() == 0) {
             return;
         }
 
@@ -86,16 +69,17 @@ public class SinglePADPanel extends SinglePanel {
         int prevY = 0;
 
         // Compute start point's Y at X = 0
-        ArrayList<PADValue> preBuffer = getValuesPreCurrentBuffer();
+        ArrayList<PADValue> preBuffer = data.getValuesPreCurrentBuffer(type);
+
         if (0 != preBuffer.size()) {
-            PADValue firstValue = padValues.get(0);
+            PADValue firstValue = values.get(0);
             prevValue = preBuffer.get(preBuffer.size() - 1);
 
-            float firstValueY = getYForValue(firstValue.value);
-            float prevValueY = getYForValue(prevValue.value);
+            float firstValueY = getYForValue(firstValue.getValue());
+            float prevValueY = getYForValue(prevValue.getValue());
 
-            long distance = firstValue.timestamp - prevValue.timestamp; // distance between points
-            long lost = startTime - firstValue.timestamp; // distance out of borders
+            long distance = firstValue.getTimestamp() - prevValue.getTimestamp(); // distance between points
+            long lost = data.getCurrentStartTime() - firstValue.getTimestamp(); // distance out of borders
 
             float deltaY = (firstValueY - prevValueY) * (float)lost / (float)distance;
 
@@ -104,27 +88,27 @@ public class SinglePADPanel extends SinglePanel {
         }
 
         // Draw gradient background
-        for (PADValue padValue : padValues) {
+        for (PADValue pad : values) {
             //int x = getXForTime(padValue.timestamp, startTime, currentTime);
-            int x = getXForTime(padValue.timestamp, getCurrentStartTime(), getCurrentEndTime());
-            int y = getYForValue(padValue.value);
+            int x = getXForTime(pad.getTimestamp(), data.getCurrentStartTime(), data.getCurrentEndTime());
+            int y = getYForValue(pad.getValue());
 
             if (null != prevValue) {
-                drawPolygon(x, y, prevX, prevY, padValue, prevValue, g2d);
+                drawPolygon(x, y, prevX, prevY, pad, prevValue, g2d);
             }
 
             prevX = x;
             prevY = y;
-            prevValue = padValue;
+            prevValue = pad;
         }
 
         drawPolygon(margin.left + getW(), prevY, prevX, prevY, prevValue, prevValue, g2d);
 
         // Draw points and labels
-        for (PADValue padValue : padValues) {
+        for (PADValue pad : values) {
             //int x = getXForTime(padValue.timestamp, startTime, currentTime);
-            int x = getXForTime(padValue.timestamp, getCurrentStartTime(), getCurrentEndTime());
-            int y = getYForValue(padValue.value);
+            int x = getXForTime(pad.timestamp, data.getCurrentStartTime(), data.getCurrentEndTime());
+            int y = getYForValue(pad.value);
 
             // Point
             g2d.setColor(Palette.blue);
@@ -134,10 +118,21 @@ public class SinglePADPanel extends SinglePanel {
 
             // Labels
             g2d.setColor(Palette.black);
-            g2d.drawString(String.format("%.1f", padValue.value), x - 5, y - 10);
+            g2d.drawString(String.format("%.1f", pad.getValue()), x - 5, y - 10);
             // TODO
-            g2d.drawString(String.format("%.1f", padValue.certainty), x, this.getHeight() - 15);
+            g2d.drawString(String.format("%.1f", pad.getCertainty()), x, this.getHeight() - 15);
         }
+    }
+
+    /**
+     * Event's Y coordinate based on its value (larger value -> lower Y coordinate -> higher on the screen)
+     *
+     * @param value Event's value.
+     *
+     * @return Event's Y coordinate.
+     */
+    final public int getYForValue(float value) {
+        return getCenterY() + (int)(getH() * value / 2) * -1;
     }
 
 }

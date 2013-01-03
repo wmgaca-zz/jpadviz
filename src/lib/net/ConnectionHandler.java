@@ -110,6 +110,8 @@ public class ConnectionHandler implements Runnable {
             for (PADState state : states) {
                 send(new PADPackage(state));
             }
+
+            endConnection();
         } else {
             log("Incorrect handshake.");
             endConnection();

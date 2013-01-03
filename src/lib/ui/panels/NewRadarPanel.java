@@ -1,25 +1,24 @@
 package lib.ui.panels;
 
+import lib.types.PAD;
+import lib.types.PADDataHandler;
 import lib.types.PADState;
 import lib.types.Palette;
 import lib.ui.PanelUpdater;
+import lib.ui.panels.base.BasePanel;
 import lib.ui.panels.base.MultiplePanel;
 
 import java.awt.*;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 
-public class MultipleRadarPanel extends MultiplePanel {
+public class NewRadarPanel extends BasePanel {
 
-    protected static MultipleRadarPanel instance = null;
+    protected static NewRadarPanel instance = null;
 
-    public static MultipleRadarPanel getInstance(int width, int height) {
-        return getInstance(width, height, true);
-    }
-
-    public static MultipleRadarPanel getInstance(int width, int height, boolean isRealTime) {
+    public static NewRadarPanel getInstance(int width, int height) {
         if (null == instance) {
-            instance = new MultipleRadarPanel(width, height, isRealTime);
+            instance = new NewRadarPanel(width, height);
         }
 
         return instance;
@@ -29,14 +28,8 @@ public class MultipleRadarPanel extends MultiplePanel {
     protected int arcLen = 360;
     protected float maxArcStroke = 10f;
 
-    public MultipleRadarPanel(int width, int height) {
-        this(width, height, true);
-    }
-
-    public MultipleRadarPanel(int width, int height, boolean isRealTime) {
-        super(width, height, isRealTime);
-
-        PanelUpdater.handle(this);
+    public NewRadarPanel(int width, int height) {
+        super(PAD.Type.PAD, width, height);
     }
 
     protected int getRadius() {
@@ -66,12 +59,7 @@ public class MultipleRadarPanel extends MultiplePanel {
 
     @Override
     public void customPaintComponent(Graphics2D g2d) {
-        int len = values.size();
-        if (0 == len) {
-            return;
-        }
-
-        PADState current = values.get(len - 1);
+        PADState current = data.getLastValue();
 
         float value = current.getP().getValue();
         float certainty = current.getP().getCertainty();

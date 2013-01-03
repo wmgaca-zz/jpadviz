@@ -9,7 +9,6 @@ import lib.ui.panels.*;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
-
 import java.awt.*;
 
 import static lib.utils.Logging.log;
@@ -28,60 +27,67 @@ public class DynamicFrame extends Frame {
         super(labelConfig);
     }
 
-    protected void clearLayout() {
-        panelContainer.removeAll();
-    }
-
     protected void setLayout(Layout layout) {
         if (layout == currentLayout) {
             return;
         }
 
+        clearLayout();
+
         if (Layout.FULL == layout) {
             setFullLayout();
         } else if (Layout.LABEL == layout) {
-            setMinimalLayout();
+            setMinimalLabelLayout();
         } else if (Layout.RADAR == layout) {
-            setMinimalLayout();
+            setMinimalRadarLayout();
         }
+
+        pack();
 
         currentLayout = layout;
     }
 
-    protected void setMinimalLayout() {
-        clearLayout();
+    protected void setMinimalRadarLayout() {
+        setSize(new Dimension(200, 200));
 
+        JPanel topContainer = new JPanel();
+        topContainer.setLayout(new BoxLayout(topContainer, BoxLayout.X_AXIS));
+        addToContainer(topContainer, MultipleRadarPanel.getInstance(200, 200));
+
+        addToContainer(panelContainer, topContainer);
+    }
+
+    protected void setMinimalLabelLayout() {
         setSize(new Dimension(1000, 200));
 
         // Top: LabelPanel
         JPanel topContainer = new JPanel();
         topContainer.setLayout(new BoxLayout(topContainer, BoxLayout.X_AXIS));
-        addToContainer(topContainer, new LabelPanel(800, 50, labelConfig));
+        //addToContainer(topContainer, new LabelPanel(800, 50, labelConfig));
+        addToContainer(topContainer, LabelPanel.getInstance(800, 50, labelConfig));
 
         // Assemble panelContainer
         addToContainer(panelContainer, topContainer);
-
-        pack();
     }
 
     protected void setFullLayout() {
-        clearLayout();
-
         setSize(new Dimension(1000, 800));
 
         // Top: LabelPanel
         JPanel topContainer = new JPanel();
         topContainer.setLayout(new BoxLayout(topContainer, BoxLayout.X_AXIS));
 
-        addToContainer(topContainer, new LabelPanel(600, 200, labelConfig));
-        addToContainer(topContainer, new MultipleRadarPanel(200, 200));
+        //addToContainer(topContainer, new LabelPanel(600, 200, labelConfig));
+        addToContainer(topContainer, NewLabelPanel.getInstance(600, 300, labelConfig));
+        //addToContainer(topContainer, new MultipleRadarPanel(200, 200));
+        addToContainer(topContainer, NewRadarPanel.getInstance(200, 200));
 
         // Middle left: SinglePADPanel for P, A, D
         JPanel middleLeftContainer = new JPanel();
         middleLeftContainer.setLayout(new BoxLayout(middleLeftContainer, BoxLayout.Y_AXIS));
-        addToContainer(middleLeftContainer, new SinglePADPanel(PAD.Type.P, 600, 200));
-        addToContainer(middleLeftContainer, new SinglePADPanel(PAD.Type.A, 600, 200));
-        addToContainer(middleLeftContainer, new SinglePADPanel(PAD.Type.D, 600, 200));
+        addToContainer(middleLeftContainer, new NewPADPanel(PAD.Type.P, 600, 200));
+        addToContainer(middleLeftContainer, new NewPADPanel(PAD.Type.A, 600, 200));
+        addToContainer(middleLeftContainer, new NewPADPanel(PAD.Type.D, 600, 200));
 
         JPanel middleRightContainer = new JPanel();
         middleRightContainer.setLayout(new BoxLayout(middleRightContainer, BoxLayout.Y_AXIS));
@@ -98,18 +104,11 @@ public class DynamicFrame extends Frame {
         // Assemble panelContainer
         addToContainer(panelContainer, topContainer);
         addToContainer(panelContainer, middleContainer);
-
-        pack();
     }
 
     @Override
     protected void initPanelContainer() {
-        // Main container
-        panelContainer = new JPanel();
-        setBackground(Palette.white);
-        panelContainer.setBackground(Palette.white);
-        panelContainer.setLayout(new BoxLayout(panelContainer, BoxLayout.Y_AXIS));
-        panelContainer.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+        super.initPanelContainer();
 
         setLayout(Layout.FULL);
     }

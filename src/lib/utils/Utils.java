@@ -7,6 +7,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
+import static lib.utils.Logging.log;
 
 public class Utils {
 
@@ -18,7 +19,7 @@ public class Utils {
     }
 
     public static void exitOnException(Exception error, String message) {
-        System.err.println(message);
+        log(message);
 
         if (null != error) {
             error.printStackTrace();

@@ -1,4 +1,6 @@
+import lib.types.PADDataHandler;
 import lib.ui.frames.DynamicFrame;
+import lib.ui.frames.StaticFrame;
 import lib.utils.Utils;
 import lib.config.VisualiserConfig;
 import lib.forms.MainWindowForm;
@@ -30,6 +32,8 @@ public class PadVisualiser {
     protected Socket socket;
     protected ObjectOutputStream output;
     protected ObjectInput input;
+
+    protected PADDataHandler dataHandler = PADDataHandler.getInstance();
 
     public static void main(String[] args) {
         // Read the labels
@@ -100,10 +104,11 @@ public class PadVisualiser {
             data = (Package) input.readObject();
         } catch (ClassNotFoundException error) {
             log("Package type not recognized: %s", data);
+        } catch (EOFException e) {
+            return null;
         } catch (IOException error) {
             error.printStackTrace();
             log("Cannot read package...");
-
             return null;
         }
 
@@ -113,12 +118,16 @@ public class PadVisualiser {
     protected void dispatchPackage(Package data) {
         if (data instanceof PADPackage) {
             PADPackage pad = (PADPackage)data;
-            frame.feed(((PADPackage) data).getState());
+            dataHandler.feed(((PADPackage)data).getState());
         }
     }
 
-    protected void initUI() {
+    protected void initRealTimeUI() {
         frame = new DynamicFrame(labelConfig);
+    }
+
+    protected void initLoadUI() {
+        frame = new StaticFrame(labelConfig);
     }
 
     protected void runRealTime() {
@@ -131,24 +140,30 @@ public class PadVisualiser {
     }
 
     protected void runLoad() {
+        log("Sending request package...");
         send(new RequestDataPackage(-1));
         Package data;
-        while (!this.mainForm.getExitApp() && (data = this.read()) != null) {
+        while (!mainForm.getExitApp() && (data = read()) != null) {
+            log("Receiving...");
             dispatchPackage(data);
         }
         log("Fetched!");
-        send(new EndPackage());
+
+        ((StaticFrame)frame).autoTime();
     }
 
     public void run() {
-        this.setupNetworking();
-        this.initUI();
+        setupNetworking();
+
         if (config.getMode().equals("auto")) {
+            initRealTimeUI();
             runRealTime();
         } else {
+            initLoadUI();
             runLoad();
         }
-        this.closeNetworking();
+
+        closeNetworking();
     }
 
     public void toggleLayout() {

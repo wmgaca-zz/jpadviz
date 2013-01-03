@@ -7,6 +7,7 @@ import lib.ui.Menu;
 import lib.ui.panels.base.Panel;
 
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -61,6 +62,19 @@ public abstract class Frame extends JFrame {
         panelContainer.repaint();
     }
 
+    protected void addToContainer(JPanel container, Component... components) {
+        for (Component component : components) {
+            container.add(component);
+
+            if (component instanceof Panel) {
+                if (!panels.contains((Panel)component)) {
+                    panels.add((Panel)component);
+                }
+            }
+        }
+    }
+
+    /*
     protected void addToContainer(JPanel container, Component panel) {
         container.add(panel);
 
@@ -69,7 +83,7 @@ public abstract class Frame extends JFrame {
                 panels.add((Panel)panel);
             }
         }
-    }
+    } //*/
 
     protected void init() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -79,18 +93,24 @@ public abstract class Frame extends JFrame {
         setJMenuBar(Menu.getInstance(this));
     }
 
-    protected abstract void initPanelContainer();
-
-    public void handleMenuAction(Menu.Action action) {
-        switch (action) {
-            case STAY_ON_TOP:
-                toggleStayOnTop();
-                break;
-        }
-    }
+    public abstract void handleMenuAction(Menu.Action action);
 
     public void toggleStayOnTop() {
         setAlwaysOnTop(!isAlwaysOnTop());
     }
 
+    protected void clearLayout() {
+        panelContainer.removeAll();
+    }
+
+    protected void initPanelContainer() {
+        // Main container
+        panelContainer = new JPanel();
+        setBackground(Palette.white);
+        panelContainer.setBackground(Palette.white);
+        panelContainer.setLayout(new BoxLayout(panelContainer, BoxLayout.Y_AXIS));
+        panelContainer.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+
+        //setLayout(Layout.FULL);
+    }
 }

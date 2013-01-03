@@ -1,9 +1,11 @@
 package lib.ui;
 
+import lib.ui.panels.base.BasePanel;
 import lib.ui.panels.base.Panel;
+
 import java.util.ArrayList;
 
-public class PanelUpdater implements Runnable {
+public class NewPanelUpdater implements Runnable {
 
     /**
      * Updater's thread reference.
@@ -13,7 +15,7 @@ public class PanelUpdater implements Runnable {
     /**
      * List of panels handled by updater.
      */
-    final protected static ArrayList<Panel> panels = new ArrayList<Panel>();
+    final protected static ArrayList<BasePanel> panels = new ArrayList<BasePanel>();
 
     /**
      * Panels refresh rate in milliseconds.
@@ -27,8 +29,8 @@ public class PanelUpdater implements Runnable {
     public void run() {
         while (true) {
             synchronized (panels) {
-                for (Panel panel : panels) {
-                    panel.repaint();
+                for (BasePanel panel : panels) {
+                    panel.update();
                 }
             }
 
@@ -45,7 +47,7 @@ public class PanelUpdater implements Runnable {
      *
      * @param panel
      */
-    public static void handle(Panel panel) {
+    public static void handle(BasePanel panel) {
         synchronized (panels) {
             if (!panels.contains(panel)) {
                 panels.add(panel);
@@ -53,7 +55,7 @@ public class PanelUpdater implements Runnable {
         }
 
         if (null == updater) {
-            updater = new Thread(new PanelUpdater());
+            updater = new Thread(new NewPanelUpdater());
             updater.start();
         }
     }

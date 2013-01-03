@@ -7,6 +7,8 @@ import lib.net.packages.PADPackage;
 import java.sql.*;
 import java.util.ArrayList;
 
+import static lib.utils.Logging.log;
+
 public class DataHandler {
 
     protected Connection connection;
@@ -15,7 +17,7 @@ public class DataHandler {
         try {
             connection = DriverManager.getConnection(connectionString, user, password);
         } catch (SQLException error) {
-            System.out.println("Cannot connect.");
+            log("Cannot connect.");
             error.printStackTrace();
             throw error;
         }
@@ -58,7 +60,7 @@ public class DataHandler {
             stmt.setInt(8, resultSetId);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Cannot insert PadValue record");
+            log("Cannot insert PadValue record");
             e.printStackTrace();
             return false;
         }
@@ -97,7 +99,7 @@ public class DataHandler {
             stmt.executeUpdate();
             return getLastInsertedId();
         }  catch (SQLException e) {
-            System.out.println("Cannot insert PadValue record");
+            log("Cannot insert PadValue record");
             e.printStackTrace();
         }
 
@@ -112,7 +114,7 @@ public class DataHandler {
             stmt.executeUpdate();
             return getLastInsertedId();
         }  catch (SQLException e) {
-            System.out.println("Cannot insert ResultSet record");
+            log("Cannot insert ResultSet record");
             e.printStackTrace();
         }
 

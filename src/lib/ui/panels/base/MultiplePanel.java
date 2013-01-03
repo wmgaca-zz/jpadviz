@@ -6,13 +6,18 @@ import lib.types.PADState;
 
 import java.awt.*;
 import java.util.ArrayList;
+import static lib.utils.Logging.log;
 
 public abstract class MultiplePanel extends Panel {
 
     protected ArrayList<PADState> values = new ArrayList<PADState>();
 
     public MultiplePanel(int width, int height) {
-        super(PAD.Type.PAD, width, height);
+        this(width, height, true);
+    }
+
+    public MultiplePanel(int width, int height, boolean isRealTime) {
+        super(PAD.Type.PAD, width, height, isRealTime);
     }
 
     @Override
@@ -41,9 +46,14 @@ public abstract class MultiplePanel extends Panel {
     }
 
     public ArrayList<PADState> getValuesForCurrentBuffer() {
-        long endTime = System.currentTimeMillis();
-        long startTime = endTime - buffer * 1000;
 
-        return getValuesForTime(startTime, endTime);
+        return getValuesForTime(getCurrentStartTime(), getCurrentEndTime());
+    }
+
+    public void autoTime() {
+        if (!isRealTime && values.size() > 0) {
+            startTime = values.get(0).getTimestamp();
+            endTime = startTime + buffer;
+        }
     }
 }

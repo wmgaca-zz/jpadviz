@@ -11,6 +11,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import static lib.utils.Logging.log;
+
 public class PadDummyClient {
     public static ServerConfig config = PadServer.config;
 
@@ -25,7 +27,7 @@ public class PadDummyClient {
         try {
             socket = new Socket(host, port);
 
-            System.out.println(String.format("Connection established with %s:%s", host, port));
+            log("Connection established with %s:%s", host, port);
 
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
