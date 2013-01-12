@@ -8,6 +8,8 @@ import lib.ui.menus.MainMenu;
 import lib.ui.panels.*;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -56,6 +58,18 @@ public class NewStaticFrame extends Frame {
         // New York, New York!
         JPanel controlsContainer = new JPanel();
 
+        final JSlider currentWindowSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
+        currentWindowSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent event) {
+                log("State changeD!!! %s", ((JSlider)event.getSource()).getValue());
+            }
+        });
+
+        addToContainer(controlsContainer, currentWindowSlider);
+
+        /*
+
         final JTextArea timeStartTextArea = new JTextArea(String.valueOf(PADDataHandler.getInstance().getCurrentStartTime()));
         timeStartTextArea.setSize(new Dimension(100, 20));
 
@@ -92,8 +106,9 @@ public class NewStaticFrame extends Frame {
         timeEndTextArea.setSize(new Dimension(100, 20));
 
         JLabel timeSpanLabel = new JLabel(String.format("%s - %s", PADDataHandler.getInstance().getCurrentStartTime(), PADDataHandler.getInstance().getCurrentEndTime()));
-
         addToContainer(controlsContainer, timeStartTextArea, timeEndTextArea);
+        //*/
+
 
         // Top: LabelPanel
         JPanel topContainer = new JPanel();

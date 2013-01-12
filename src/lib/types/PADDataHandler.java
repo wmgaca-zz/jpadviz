@@ -1,10 +1,7 @@
 package lib.types;
 
-import lib.ui.panels.base.Panel;
 import lib.utils.Utils;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import static lib.utils.Logging.log;
 
@@ -156,6 +153,8 @@ public class PADDataHandler {
 
         startTime = values.get(0).getTimestamp();
         endTime = values.get(values.size() - 1).getTimestamp();
+
+        startTime += 5 * (endTime - startTime) / 6;
 
         log("autoTime: %s - %s = %s", startTime, endTime, startTime - endTime);
 
