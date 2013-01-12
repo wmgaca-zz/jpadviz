@@ -2,10 +2,13 @@
 
     <!-- real time: "auto"
          load data: any other value -->
-    <mode>auto</mode>
+    <mode></mode>
 
     <!-- compact: "min"
          full window: any other value -->
     <layout></layout>
+
+    <!-- TODO -->
+    <session id="3" channels="1-5" />
 
 </settings>

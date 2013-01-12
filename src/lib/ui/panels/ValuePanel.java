@@ -1,25 +1,25 @@
 package lib.ui.panels;
 
 import lib.types.PAD;
-import lib.types.PADState;
 import lib.types.PADValue;
 import lib.types.Palette;
-import lib.ui.panels.base.BasePanel;
-import lib.ui.panels.base.SinglePanel;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
-public class SingleLabelPanel extends BasePanel {
+public class ValuePanel extends lib.ui.panels.base.Panel {
 
-    public SingleLabelPanel(PAD.Type type, int width, int height) {
+    public ValuePanel(PAD.Type type, int width, int height) {
         super(type, width, height);
     }
 
     @Override
     public void customPaintComponent(Graphics2D g2d) {
-
         PADValue current = data.getLastValue(type);
+
+        if (null == current) {
+            return;
+        }
 
         // Colored background for Positiveness
         if (PAD.Type.P == type) {
@@ -31,7 +31,6 @@ public class SingleLabelPanel extends BasePanel {
             Rectangle2D rect = new Rectangle2D.Double(margin.left, margin.top, getW(), getH());
             g2d.draw(rect);
             g2d.fill(rect);
-
         }
 
         g2d.setColor(Palette.black);

@@ -1,10 +1,16 @@
 package lib.types;
 
+import lib.ui.panels.base.Panel;
+import lib.utils.Utils;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import static lib.utils.Logging.log;
 
 public class PADDataHandler {
 
-    protected ArrayList<PADState> values = new ArrayList<PADState>();
+    protected final ArrayList<PADState> values = new ArrayList<PADState>();
 
     protected boolean isRealTime;
 
@@ -36,7 +42,17 @@ public class PADDataHandler {
     }
 
     public void feed(PADState state) {
-        values.add(state);
+        synchronized (values) {
+            values.add(state);
+        }
+    }
+
+    public boolean matchTime(PADState state) {
+        return matchTime(state, startTime, endTime);
+    }
+
+    public boolean matchTime(PADState state, long start, long end) {
+        return state.getTimestamp() >= start && state.getTimestamp() <= end;
     }
 
     protected ArrayList<PADState> getValuesForTime(long start, long end) {
@@ -44,12 +60,14 @@ public class PADDataHandler {
 
         boolean found = false;
 
-        for (PADState state : values) {
-            if (state.getTimestamp() >= start && state.getTimestamp() <= end) {
-                list.add(state);
-                found = true;
-            } else if (found) {
-                break;
+        synchronized (values) {
+            for (PADState state : values) {
+                if (matchTime(state, start, end)) {
+                    list.add(state);
+                    found = true;
+                } else if (found) {
+                    break;
+                }
             }
         }
 
@@ -84,10 +102,16 @@ public class PADDataHandler {
         return values;
     }
 
-    public PADState getLastValue() {
+    public PADState getLastState() {
         if (isRealTime) {
             if (!values.isEmpty()) {
                 return values.get(values.size() - 1);
+            }
+        } else {
+            for (PADState state : Utils.reversePSList(values)) {
+                if (matchTime(state)) {
+                    return state;
+                }
             }
         }
 
@@ -95,7 +119,9 @@ public class PADDataHandler {
     }
 
     public PADValue getLastValue(PAD.Type type) {
-        return getLastValue().getPADValue(type);
+        PADState lastState = getLastState();
+
+        return (null == lastState) ? null : lastState.getPADValue(type);
     }
 
     public long getCurrentStartTime() {
@@ -115,16 +141,26 @@ public class PADDataHandler {
     }
 
     public void autoTime() {
-        if (!isRealTime || isEmpty()) {
+        if (isRealTime) {
             return;
+        } else if (isEmpty()) {
+            startTime = 0;
+            endTime = 0;
         }
 
         endTime = values.get(0).getTimestamp();
-
         startTime = endTime - buffer * 1000;
         if (0 > startTime) {
             startTime = 0;
         }
+
+        startTime = values.get(0).getTimestamp();
+        endTime = values.get(values.size() - 1).getTimestamp();
+
+        log("autoTime: %s - %s = %s", startTime, endTime, startTime - endTime);
+
+        log("first: %s", values.get(0));
+        log(" last: %s", values.get(values.size() - 1));
     }
 
     protected static PADDataHandler instance = null;
@@ -132,7 +168,13 @@ public class PADDataHandler {
     public static PADDataHandler getInstance(boolean isRealTime) {
         if (null == instance) {
             instance = new PADDataHandler(isRealTime);
+
+            if (isRealTime) {
+                instance.autoTime();
+            }
         }
+
+        log("isRealTime: %s", instance.isRealTime);
 
         return instance;
     }

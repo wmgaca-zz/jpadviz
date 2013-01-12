@@ -3,8 +3,9 @@ package lib.ui.frames.base;
 import lib.types.LabelConfig;
 import lib.types.PADState;
 import lib.types.Palette;
-import lib.ui.Menu;
-import lib.ui.panels.base.Panel;
+import lib.ui.menus.MainMenu;
+
+import static lib.utils.Logging.log;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -53,12 +54,7 @@ public abstract class Frame extends JFrame {
     }
 
     public final void feed(PADState state) {
-        getContentPane().setBackground(Palette.white);
-
-        for (Panel panel : panels) {
-            panel.feed(state);
-        }
-
+        log("Frame.feed()");
         panelContainer.repaint();
     }
 
@@ -90,10 +86,10 @@ public abstract class Frame extends JFrame {
         setVisible(true);
         initPanelContainer();
         setContentPane(panelContainer);
-        setJMenuBar(Menu.getInstance(this));
+        setJMenuBar(MainMenu.getInstance(this));
     }
 
-    public abstract void handleMenuAction(Menu.Action action);
+    public abstract void handleMenuAction(MainMenu.Action action);
 
     public void toggleStayOnTop() {
         setAlwaysOnTop(!isAlwaysOnTop());

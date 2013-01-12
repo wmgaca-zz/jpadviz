@@ -17,8 +17,6 @@ public class PAD {
     }
 
     public static String getName(PAD.Type type) {
-        log("type: %s", type.toString());
-        log("got: %s", names.get(type));
         return PAD.names.get(type);
     }
 }

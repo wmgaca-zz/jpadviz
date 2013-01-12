@@ -1,17 +1,18 @@
 package lib.ui.panels;
 
 import lib.types.PAD;
+import lib.types.PADState;
 import lib.types.PADValue;
 import lib.types.Palette;
-import lib.ui.panels.base.BasePanel;
+import static lib.utils.Logging.log;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 
-public class NewPADPanel extends BasePanel {
+public class PADPanel extends lib.ui.panels.base.Panel {
 
-    public NewPADPanel(PAD.Type type, int width, int height) {
+    public PADPanel(PAD.Type type, int width, int height) {
         super(type, width, height);
     }
 
@@ -45,6 +46,11 @@ public class NewPADPanel extends BasePanel {
     @Override
     public void customPaintComponent(Graphics2D g2d) {
         ArrayList<PADValue> values = data.getCurrentValues(type);
+
+        if (0 == values.size()) {
+            return;
+        }
+
         PADValue last = values.get(values.size() - 1);
 
         // Draw -1, 0 and 1 Y lines
@@ -87,10 +93,14 @@ public class NewPADPanel extends BasePanel {
             prevX = margin.left;
         }
 
+        long currentStartTime = data.getCurrentStartTime();
+        long currentEndTime = data.getCurrentEndTime();
+
         // Draw gradient background
         for (PADValue pad : values) {
             //int x = getXForTime(padValue.timestamp, startTime, currentTime);
-            int x = getXForTime(pad.getTimestamp(), data.getCurrentStartTime(), data.getCurrentEndTime());
+
+            int x = getXForTime(pad.getTimestamp(), currentStartTime, currentEndTime);
             int y = getYForValue(pad.getValue());
 
             if (null != prevValue) {
@@ -106,8 +116,7 @@ public class NewPADPanel extends BasePanel {
 
         // Draw points and labels
         for (PADValue pad : values) {
-            //int x = getXForTime(padValue.timestamp, startTime, currentTime);
-            int x = getXForTime(pad.timestamp, data.getCurrentStartTime(), data.getCurrentEndTime());
+            int x = getXForTime(pad.timestamp, currentStartTime, currentEndTime);
             int y = getYForValue(pad.value);
 
             // Point

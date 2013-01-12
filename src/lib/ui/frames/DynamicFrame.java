@@ -2,13 +2,11 @@ package lib.ui.frames;
 
 import lib.types.LabelConfig;
 import lib.types.PAD;
-import lib.types.Palette;
-import lib.ui.Menu;
+import lib.ui.menus.MainMenu;
 import lib.ui.frames.base.Frame;
 import lib.ui.panels.*;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
 import java.awt.*;
 
 import static lib.utils.Logging.log;
@@ -52,7 +50,8 @@ public class DynamicFrame extends Frame {
 
         JPanel topContainer = new JPanel();
         topContainer.setLayout(new BoxLayout(topContainer, BoxLayout.X_AXIS));
-        addToContainer(topContainer, MultipleRadarPanel.getInstance(200, 200));
+        addToContainer(topContainer, RadarPanel.getInstance(200, 200));
+        addToContainer(topContainer, new StatePanel(200, 200));
 
         addToContainer(panelContainer, topContainer);
     }
@@ -64,7 +63,8 @@ public class DynamicFrame extends Frame {
         JPanel topContainer = new JPanel();
         topContainer.setLayout(new BoxLayout(topContainer, BoxLayout.X_AXIS));
         //addToContainer(topContainer, new LabelPanel(800, 50, labelConfig));
-        addToContainer(topContainer, LabelPanel.getInstance(800, 50, labelConfig));
+        addToContainer(topContainer, LabelPanel.getInstance(800, 50, labelConfig),
+                       new StatePanel(200, 200));
 
         // Assemble panelContainer
         addToContainer(panelContainer, topContainer);
@@ -78,22 +78,22 @@ public class DynamicFrame extends Frame {
         topContainer.setLayout(new BoxLayout(topContainer, BoxLayout.X_AXIS));
 
         //addToContainer(topContainer, new LabelPanel(600, 200, labelConfig));
-        addToContainer(topContainer, NewLabelPanel.getInstance(600, 300, labelConfig));
+        addToContainer(topContainer, LabelPanel.getInstance(600, 300, labelConfig));
         //addToContainer(topContainer, new MultipleRadarPanel(200, 200));
-        addToContainer(topContainer, NewRadarPanel.getInstance(200, 200));
+        addToContainer(topContainer, RadarPanel.getInstance(200, 200));
 
         // Middle left: SinglePADPanel for P, A, D
         JPanel middleLeftContainer = new JPanel();
         middleLeftContainer.setLayout(new BoxLayout(middleLeftContainer, BoxLayout.Y_AXIS));
-        addToContainer(middleLeftContainer, new NewPADPanel(PAD.Type.P, 600, 200));
-        addToContainer(middleLeftContainer, new NewPADPanel(PAD.Type.A, 600, 200));
-        addToContainer(middleLeftContainer, new NewPADPanel(PAD.Type.D, 600, 200));
+        addToContainer(middleLeftContainer, new MultiplePADPanel(600, 200));
+        addToContainer(middleLeftContainer, new PADPanel(PAD.Type.A, 600, 200));
+        addToContainer(middleLeftContainer, new PADPanel(PAD.Type.D, 600, 200));
 
         JPanel middleRightContainer = new JPanel();
         middleRightContainer.setLayout(new BoxLayout(middleRightContainer, BoxLayout.Y_AXIS));
-        addToContainer(middleRightContainer, new SingleLabelPanel(PAD.Type.P, 200, 200));
-        addToContainer(middleRightContainer, new SingleLabelPanel(PAD.Type.A, 200, 200));
-        addToContainer(middleRightContainer, new SingleLabelPanel(PAD.Type.D, 200, 200));
+        addToContainer(middleRightContainer, new ValuePanel(PAD.Type.P, 200, 200));
+        addToContainer(middleRightContainer, new ValuePanel(PAD.Type.A, 200, 200));
+        addToContainer(middleRightContainer, new ValuePanel(PAD.Type.D, 200, 200));
 
         // Assemble middleContainer
         JPanel middleContainer = new JPanel();
@@ -114,7 +114,7 @@ public class DynamicFrame extends Frame {
     }
 
     @Override
-    public void handleMenuAction(Menu.Action action) {
+    public void handleMenuAction(MainMenu.Action action) {
         switch (action) {
             case STAY_ON_TOP:
                 toggleStayOnTop();

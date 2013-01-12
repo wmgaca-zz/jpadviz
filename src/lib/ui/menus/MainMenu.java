@@ -1,4 +1,4 @@
-package lib.ui;
+package lib.ui.menus;
 
 import lib.utils.Utils;
 import lib.ui.frames.base.Frame;
@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
-public final class Menu {
+public final class MainMenu {
 
     public enum Action {
         STAY_ON_TOP,
@@ -21,12 +21,13 @@ public final class Menu {
 
     public static JMenuBar getInstance(final Frame frame) {
         if (instance == null) {
-            synchronized (Menu.class) {
+            synchronized (MainMenu.class) {
                 if (instance == null) {
-                    instance = Menu.getMenuBar(frame);
+                    instance = MainMenu.getMenuBar(frame);
                 }
             }
         }
+
         return instance;
     }
 
@@ -144,7 +145,7 @@ public final class Menu {
         return menuBar;
     }
 
-    private Menu() {
+    private MainMenu() {
     }
 
 

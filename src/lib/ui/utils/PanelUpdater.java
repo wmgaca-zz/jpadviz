@@ -1,6 +1,7 @@
-package lib.ui;
+package lib.ui.utils;
 
 import lib.ui.panels.base.Panel;
+
 import java.util.ArrayList;
 
 public class PanelUpdater implements Runnable {
@@ -28,7 +29,7 @@ public class PanelUpdater implements Runnable {
         while (true) {
             synchronized (panels) {
                 for (Panel panel : panels) {
-                    panel.repaint();
+                    panel.update();
                 }
             }
 

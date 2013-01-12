@@ -1,25 +1,20 @@
 package lib.ui.panels;
 
+import lib.types.PAD;
 import lib.types.PADState;
 import lib.types.Palette;
-import lib.ui.PanelUpdater;
-import lib.ui.panels.base.MultiplePanel;
 
 import java.awt.*;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 
-public class MultipleRadarPanel extends MultiplePanel {
+public class RadarPanel extends lib.ui.panels.base.Panel {
 
-    protected static MultipleRadarPanel instance = null;
+    protected static RadarPanel instance = null;
 
-    public static MultipleRadarPanel getInstance(int width, int height) {
-        return getInstance(width, height, true);
-    }
-
-    public static MultipleRadarPanel getInstance(int width, int height, boolean isRealTime) {
+    public static RadarPanel getInstance(int width, int height) {
         if (null == instance) {
-            instance = new MultipleRadarPanel(width, height, isRealTime);
+            instance = new RadarPanel(width, height);
         }
 
         return instance;
@@ -29,14 +24,8 @@ public class MultipleRadarPanel extends MultiplePanel {
     protected int arcLen = 360;
     protected float maxArcStroke = 10f;
 
-    public MultipleRadarPanel(int width, int height) {
-        this(width, height, true);
-    }
-
-    public MultipleRadarPanel(int width, int height, boolean isRealTime) {
-        super(width, height, isRealTime);
-
-        PanelUpdater.handle(this);
+    public RadarPanel(int width, int height) {
+        super(PAD.Type.PAD, width, height);
     }
 
     protected int getRadius() {
@@ -66,12 +55,11 @@ public class MultipleRadarPanel extends MultiplePanel {
 
     @Override
     public void customPaintComponent(Graphics2D g2d) {
-        int len = values.size();
-        if (0 == len) {
+        PADState current = data.getLastState();
+
+        if (null == current) {
             return;
         }
-
-        PADState current = values.get(len - 1);
 
         float value = current.getP().getValue();
         float certainty = current.getP().getCertainty();

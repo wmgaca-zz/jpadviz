@@ -1,4 +1,4 @@
-package lib.ui;
+package lib.types;
 
 public class Margin {
 

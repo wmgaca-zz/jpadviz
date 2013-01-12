@@ -34,9 +34,9 @@ public class DataHandler {
             ResultSet results = connection.createStatement().executeQuery("SELECT p, a, d, cp, ca, cd, timestamp FROM pad_value WHERE result_set_id = " + resultSetId);
 
             while (results.next()) {
-                states.add(new PADState(new PADValue(results.getFloat(1), results.getFloat(4)),
-                                        new PADValue(results.getFloat(2), results.getFloat(5)),
-                                        new PADValue(results.getFloat(3), results.getFloat(6)),
+                states.add(new PADState(new PADValue(results.getFloat(1), results.getFloat(4), results.getLong(7)),
+                                        new PADValue(results.getFloat(2), results.getFloat(5), results.getLong(7)),
+                                        new PADValue(results.getFloat(3), results.getFloat(6), results.getLong(7)),
                                         results.getLong(7)));
             }
         } catch (SQLException e) {

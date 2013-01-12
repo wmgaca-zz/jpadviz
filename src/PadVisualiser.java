@@ -1,5 +1,6 @@
 import lib.types.PADDataHandler;
 import lib.ui.frames.DynamicFrame;
+import lib.ui.frames.NewStaticFrame;
 import lib.ui.frames.StaticFrame;
 import lib.utils.Utils;
 import lib.config.VisualiserConfig;
@@ -33,7 +34,7 @@ public class PadVisualiser {
     protected ObjectOutputStream output;
     protected ObjectInput input;
 
-    protected PADDataHandler dataHandler = PADDataHandler.getInstance();
+    protected PADDataHandler dataHandler;
 
     public static void main(String[] args) {
         // Read the labels
@@ -127,7 +128,7 @@ public class PadVisualiser {
     }
 
     protected void initLoadUI() {
-        frame = new StaticFrame(labelConfig);
+        frame = new NewStaticFrame(labelConfig);
     }
 
     protected void runRealTime() {
@@ -144,23 +145,25 @@ public class PadVisualiser {
         send(new RequestDataPackage(-1));
         Package data;
         while (!mainForm.getExitApp() && (data = read()) != null) {
-            log("Receiving...");
             dispatchPackage(data);
         }
-        log("Fetched!");
-
-        ((StaticFrame)frame).autoTime();
+        log("Data loaded.");
     }
 
     public void run() {
         setupNetworking();
 
         if (config.getMode().equals("auto")) {
+            dataHandler = PADDataHandler.getInstance(true);
             initRealTimeUI();
             runRealTime();
         } else {
+            log("runLoad!!!!");
+            dataHandler = PADDataHandler.getInstance(false);
             initLoadUI();
             runLoad();
+            log("timeAutoTuning...");
+            dataHandler.autoTime();
         }
 
         closeNetworking();

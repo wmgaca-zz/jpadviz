@@ -1,37 +1,16 @@
 package lib.ui.panels.base;
 
-import lib.types.PAD;
-import lib.types.PADState;
-import lib.ui.Margin;
-import lib.ui.NewPanelUpdater;
+import lib.types.*;
+import lib.ui.utils.PanelUpdater;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Line2D;
 
 /**
  * Basic type for all panels used by the visualiser.
  */
 public abstract class Panel extends JPanel {
-
-    /**
-     *
-     */
-    protected boolean isRealTime = true;
-
-    /**
-     *
-     */
-    protected long startTime;
-
-    /**
-     *
-     */
-    protected long endTime;
-
-    /**
-     * Time span in seconds.
-     */
-    protected int buffer = 15;
 
     /**
      * Data type visualised by the widget.
@@ -47,6 +26,10 @@ public abstract class Panel extends JPanel {
      * Drawing margins.
      */
     protected Margin margin = new Margin(10, 10, 10, 10);
+
+    protected Graphics2D g2d = null;
+
+    protected PADDataHandler data = PADDataHandler.getInstance();
 
     /**
      * Initializes the widget.
@@ -67,27 +50,16 @@ public abstract class Panel extends JPanel {
      * @param height Widget's height resolution (in pixels)
      */
     public Panel(PAD.Type type, int width, int height, boolean isRealTime) {
-        this.setPreferredSize(new Dimension(width, height));
+        setPreferredSize(new Dimension(width, height));
         this.type = type;
         this.label = PAD.getName(type);
-        this.isRealTime = isRealTime;
+
+        PanelUpdater.handle(this);
     }
 
     /**
-     * Update widget's data with a new state. This method is called by feed().
-     *
-     * @see #feed(lib.types.PADState)
-     * @param state State
      */
-    protected abstract void feedState(PADState state);
-
-    /**
-     * Update widget's data with a new state.
-     *
-     * @param state State
-     */
-    public final void feed(PADState state) {
-        feedState(state);
+    public final void update() {
         repaint();
     }
 
@@ -96,7 +68,13 @@ public abstract class Panel extends JPanel {
      *
      * @param g2d Graphics object to be drawn
      */
-    public abstract void customPaintComponent(Graphics2D g2d);
+    public void customPaintComponent(Graphics2D g2d) {
+        customPaintComponent();
+    }
+
+    public void customPaintComponent() {
+
+    }
 
     /**
      * Widget's drawing logic.
@@ -109,13 +87,14 @@ public abstract class Panel extends JPanel {
     final public void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
 
-        Graphics2D g2d = (Graphics2D)graphics;
+        g2d = (Graphics2D)graphics;
 
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                              RenderingHints.VALUE_ANTIALIAS_ON);
 
-
-        this.customPaintComponent((Graphics2D)graphics);
+        if (!data.isEmpty()) {
+            customPaintComponent((Graphics2D) graphics);
+        }
     }
 
     /**
@@ -124,7 +103,7 @@ public abstract class Panel extends JPanel {
      * @return Drawing area width in pixels.
      */
     public int getW() {
-        return this.getWidth() - this.margin.left - this.margin.right;
+        return getWidth() - margin.left - margin.right;
     }
 
     /**
@@ -133,7 +112,7 @@ public abstract class Panel extends JPanel {
      * @return Drawing area height in pixels.
      */
     public int getH() {
-        return this.getHeight() - this.margin.top - this.margin.bottom;
+        return getHeight() - margin.top - margin.bottom;
     }
 
     /**
@@ -173,60 +152,33 @@ public abstract class Panel extends JPanel {
         return margin.left + (int)((relativeTime / timeSpan) * (double)getW());
     }
 
-    /**
-     * Event's Y coordinate based on its value (larger value -> lower Y coordinate -> higher on the screen)
-     *
-     * @param value Event's value.
-     *
-     * @return Event's Y coordinate.
-     */
-    final public int getYForValue(float value) {
-        return getCenterY() + (int)(getH() * value / 2) * -1;
+    protected void draw(Shape shape) {
+        draw(shape, g2d.getColor());
     }
 
-    public long getCurrentBuffer() {
-        if (isRealTime) {
-            return buffer;
-        } else {
-            return getCurrentEndTime() - getCurrentStartTime();
-        }
+    protected void draw(String string) {
     }
 
-    public long getCurrentStartTime() {
-        if (isRealTime) {
-            return getCurrentEndTime() - buffer * 1000;
-        } else {
-            return startTime;
-        }
+    protected void draw(Shape shape, Color color) {
+        Color initColor = g2d.getColor();
+        g2d.setColor(color);
+
+        g2d.draw(shape);
+
+        g2d.setColor(initColor);
     }
 
-    public long getCurrentEndTime() {
-        if (isRealTime) {
-            return System.currentTimeMillis();
-        } else {
-            return endTime;
-        }
+    protected Line2D line(Coords start, Coords end) {
+        return new Line2D.Double(start.getX(), start.getY(), end.getX(), end.getY());
     }
 
-    public long getStartTime() {
-        return startTime;
+    protected Line2D line(int startX, int startY, int endX, int endY) {
+        return line(new Coords(startX, startY), new Coords(endX, endY));
     }
 
-    public void setStartTime(long start) {
-        startTime = start;
-    }
 
-    public long getEndTime() {
-        return endTime;
-    }
 
-    public void setEndTime(long end) {
-        endTime = end;
+    protected void setColor(Color color) {
+        g2d.setColor(color);
     }
-
-    public boolean isRealTime() {
-        return isRealTime;
-    }
-
-    public abstract void autoTime();
 }
