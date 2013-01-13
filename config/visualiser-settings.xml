@@ -2,7 +2,7 @@
 
     <!-- real time: "auto"
          load data: any other value -->
-    <mode></mode>
+    <mode>auto</mode>
 
     <!-- compact: "min"
          full window: any other value -->

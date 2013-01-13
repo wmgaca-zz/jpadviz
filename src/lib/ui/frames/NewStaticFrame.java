@@ -58,15 +58,38 @@ public class NewStaticFrame extends Frame {
         // New York, New York!
         JPanel controlsContainer = new JPanel();
 
+        JLabel zoomLabel = new JLabel("Zoom:");
+        JLabel windowLabel = new JLabel("Window:");
+
+        final JSlider currentZoomSlider = new JSlider(JSlider.HORIZONTAL, 5, 100, 10);
         final JSlider currentWindowSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
-        currentWindowSlider.addChangeListener(new ChangeListener() {
+
+        currentZoomSlider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent event) {
-                log("State changeD!!! %s", ((JSlider)event.getSource()).getValue());
+                int middle = currentWindowSlider.getValue();
+                int zoom = ((JSlider)event.getSource()).getValue();
+
+                PADDataHandler.getInstance().setWindow(middle, zoom);
             }
         });
 
-        addToContainer(controlsContainer, currentWindowSlider);
+        currentWindowSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent event) {
+                int middle = ((JSlider)event.getSource()).getValue();
+                int zoom = currentZoomSlider.getValue();
+
+                PADDataHandler.getInstance().setWindow(middle, zoom);
+            }
+        });
+
+        PADDataHandler.getInstance().setWindow(currentWindowSlider.getValue(), currentZoomSlider.getValue());
+
+        addToContainer(
+                controlsContainer,
+                zoomLabel, currentZoomSlider,
+                windowLabel, currentWindowSlider);
 
         /*
 

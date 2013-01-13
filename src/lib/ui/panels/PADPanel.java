@@ -1,9 +1,7 @@
 package lib.ui.panels;
 
-import lib.types.PAD;
-import lib.types.PADState;
-import lib.types.PADValue;
-import lib.types.Palette;
+import lib.types.*;
+
 import static lib.utils.Logging.log;
 
 import java.awt.*;
@@ -76,6 +74,7 @@ public class PADPanel extends lib.ui.panels.base.Panel {
 
         // Compute start point's Y at X = 0
         ArrayList<PADValue> preBuffer = data.getValuesPreCurrentBuffer(type);
+        ArrayList<PADValue> postBuffer = data.getValuesPostCurrentBuffer(type);
 
         if (0 != preBuffer.size()) {
             PADValue firstValue = values.get(0);
@@ -105,6 +104,8 @@ public class PADPanel extends lib.ui.panels.base.Panel {
 
             if (null != prevValue) {
                 drawPolygon(x, y, prevX, prevY, pad, prevValue, g2d);
+            } else {
+                drawPolygon(x, y, margin.left, y, pad, pad, g2d);
             }
 
             prevX = x;
@@ -112,7 +113,24 @@ public class PADPanel extends lib.ui.panels.base.Panel {
             prevValue = pad;
         }
 
-        drawPolygon(margin.left + getW(), prevY, prevX, prevY, prevValue, prevValue, g2d);
+        if (0 != postBuffer.size() && prevValue != null) {
+            PADValue nextValue = postBuffer.get(0);
+
+            float nextValueY = getYForValue(nextValue.getValue());
+
+            long distance = nextValue.getTimestamp() - prevValue.getTimestamp(); // distance between points
+            long present = data.getCurrentEndTime() - last.getTimestamp();
+
+            float deltaY = (nextValueY - prevY) * (float)present / (float)distance;
+
+            Coords next = new Coords(margin.left + getW(),
+                    (int)(prevY + deltaY));
+
+            drawPolygon(next.getX(), next.getY(), prevX, prevY, prevValue, prevValue, g2d);
+        } else {
+            drawPolygon(margin.left + getW(), prevY, prevX, prevY, prevValue, prevValue, g2d);
+        }
+
 
         // Draw points and labels
         for (PADValue pad : values) {

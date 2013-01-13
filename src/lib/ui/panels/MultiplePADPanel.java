@@ -7,6 +7,7 @@ import lib.types.Palette;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
+import static lib.utils.Logging.log;
 
 public class MultiplePADPanel extends lib.ui.panels.base.Panel {
 
@@ -68,19 +69,40 @@ public class MultiplePADPanel extends lib.ui.panels.base.Panel {
         long currentStartTime = data.getCurrentStartTime();
         long currentEndTime = data.getCurrentEndTime();
 
-        // Draw gradient background
         for (PADValue pad : values) {
             current = new Coords(getXForTime(pad.getTimestamp(), currentStartTime, currentEndTime),
                                  getYForValue(pad.getValue()));
 
             if (null != prevValue) {
                 draw(line(current, prev), color);
+            } else {
+                draw(line(current, new Coords(margin.left, current.getY())), color);
             }
 
             prev = current;
             prevValue = pad;
         }
 
+        // Compute end point's Y
+        ArrayList<PADValue> postBuffer = data.getValuesPostCurrentBuffer(type);
+        if (0 != postBuffer.size() && prevValue != null) {
+            PADValue nextValue = postBuffer.get(0);
+
+            float lastValueY = prev.getY();
+            float nextValueY = getYForValue(nextValue.getValue());
+
+            long distance = nextValue.getTimestamp() - prevValue.getTimestamp(); // distance between points
+            long present = data.getCurrentEndTime() - last.getTimestamp();
+
+            float deltaY = (nextValueY - lastValueY) * (float)present / (float)distance;
+
+            Coords next = new Coords(margin.left + getW(),
+                    (int)(lastValueY + deltaY));
+
+            draw(line(prev, next), color);
+        } else {
+            draw(line(prev, new Coords(margin.left + getW(), prev.getY())), color);
+        }
 
         // Draw points and labels
         for (PADValue pad : values) {

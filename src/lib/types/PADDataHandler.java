@@ -89,10 +89,36 @@ public class PADDataHandler {
         return getValuesForTime(0, getCurrentStartTime() - 1);
     }
 
+    public ArrayList<PADState> getValuesPostCurrentBuffer() {
+        if (0 == values.size()) {
+            log("value.size == 0");
+            return new ArrayList<PADState>();
+        }
+
+        PADState lastState = values.get(values.size() - 1);
+        PADState bufferLastState = getLastState();
+
+        if (lastState.getTimestamp() < bufferLastState.getTimestamp()) {
+            return new ArrayList<PADState>();
+        }
+
+        return getValuesForTime(getCurrentEndTime() + 1, lastState.getTimestamp());
+    }
+
     public ArrayList<PADValue> getValuesPreCurrentBuffer(PAD.Type type) {
         ArrayList<PADValue> values = new ArrayList<PADValue>();
 
         for (PADState state : getValuesPreCurrentBuffer()) {
+            values.add(state.getPADValue(type));
+        }
+
+        return values;
+    }
+
+    public ArrayList<PADValue> getValuesPostCurrentBuffer(PAD.Type type) {
+        ArrayList<PADValue> values = new ArrayList<PADValue>();
+
+        for (PADState state : getValuesPostCurrentBuffer()) {
             values.add(state.getPADValue(type));
         }
 
@@ -162,6 +188,21 @@ public class PADDataHandler {
         log(" last: %s", values.get(values.size() - 1));
     }
 
+    public void setWindow(int middle, int zoom) {
+        if (0 == values.size()) {
+            return;
+        }
+
+        long start = values.get(0).getTimestamp();
+        long end = values.get(values.size() - 1).getTimestamp();
+
+        long window = ((end - start) * zoom) / 100;
+        long center = start + ((end - start) * middle) / 100;
+
+        startTime = center - window / 2;
+        endTime = center + window / 2;
+    }
+
     protected static PADDataHandler instance = null;
 
     public static PADDataHandler getInstance(boolean isRealTime) {
@@ -172,8 +213,6 @@ public class PADDataHandler {
                 instance.autoTime();
             }
         }
-
-        log("isRealTime: %s", instance.isRealTime);
 
         return instance;
     }
