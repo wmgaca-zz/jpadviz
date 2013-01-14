@@ -32,6 +32,8 @@ public class PADDataHandler {
 
     public PADDataHandler() {
         this(true);
+
+        autoTime();
     }
 
     public boolean isEmpty() {
@@ -213,7 +215,7 @@ public class PADDataHandler {
 
         PADDataHandler handler = PADDataHandlerContainer.getInstance(isRealTime).get();
 
-        handler.autoTime();
+        //handler.autoTime();
 
         log("handler: %s", handler);
 

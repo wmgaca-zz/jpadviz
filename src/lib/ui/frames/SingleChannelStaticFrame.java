@@ -14,7 +14,10 @@ import java.awt.*;
 
 import static lib.utils.Logging.log;
 
-public class NewStaticFrame extends Frame {
+public class SingleChannelStaticFrame extends Frame {
+
+    public static int DEFAULT_ZOOM = 10;
+    public static int DEFAULT_WINDOW = 50;
 
     public enum Layout {
         FULL
@@ -22,7 +25,7 @@ public class NewStaticFrame extends Frame {
 
     protected Layout currentLayout;
 
-    public NewStaticFrame(LabelConfig labelConfig) {
+    public SingleChannelStaticFrame(LabelConfig labelConfig) {
         super(labelConfig);
     }
 
@@ -57,8 +60,8 @@ public class NewStaticFrame extends Frame {
         JLabel zoomLabel = new JLabel("Zoom:");
         JLabel windowLabel = new JLabel("Window:");
 
-        final JSlider currentZoomSlider = new JSlider(JSlider.HORIZONTAL, 5, 100, 10);
-        final JSlider currentWindowSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
+        final JSlider currentZoomSlider = new JSlider(JSlider.HORIZONTAL, 5, 100, DEFAULT_ZOOM);
+        final JSlider currentWindowSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, DEFAULT_WINDOW);
 
         currentZoomSlider.addChangeListener(new ChangeListener() {
             @Override
@@ -139,7 +142,7 @@ public class NewStaticFrame extends Frame {
         // Middle left: SinglePADPanel for P, A, D
         JPanel middleLeftContainer = new JPanel();
         middleLeftContainer.setLayout(new BoxLayout(middleLeftContainer, BoxLayout.Y_AXIS));
-        addToContainer(middleLeftContainer, new MultiplePADPanel(600, 200),
+        addToContainer(middleLeftContainer, new PADPanel(PAD.Type.P, 600, 200),
                                             new PADPanel(PAD.Type.A, 600, 200),
                                             new PADPanel(PAD.Type.D, 600, 200));
 

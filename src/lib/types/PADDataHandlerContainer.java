@@ -2,6 +2,7 @@ package lib.types;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import static lib.utils.Logging.log;
 
@@ -14,6 +15,20 @@ public class PADDataHandlerContainer {
 
     public PADDataHandlerContainer() {
         this(true);
+    }
+
+    protected void add(int method, PADDataHandler handler) {
+        assert !list.contains(handler);
+        assert !map.containsKey(method);
+
+        list.add(handler);
+        map.put(method, handler);
+    }
+
+    public void init(List<Integer> methods) {
+        for (Integer method : methods) {
+            add(method, new PADDataHandler(isRealTime));
+        }
     }
 
     public PADDataHandlerContainer(boolean isRealTime) {
@@ -29,7 +44,6 @@ public class PADDataHandlerContainer {
             if (isRealTime) {
                 log("Add empty");
                 list.add(new PADDataHandler(isRealTime));
-
             } else {
                 return null;
             }

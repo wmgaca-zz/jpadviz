@@ -17,4 +17,12 @@ public class VisualiserConfig extends PadConfig {
     public String getLayout() {
         return get("layout");
     }
+
+    public boolean isRealTime() {
+        return getMode().equals("auto");
+    }
+
+    public boolean isOneChannel() {
+        return true;
+    }
 }

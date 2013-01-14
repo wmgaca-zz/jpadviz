@@ -1,7 +1,6 @@
-import lib.types.PADDataHandler;
 import lib.types.PADDataHandlerContainer;
 import lib.ui.frames.DynamicFrame;
-import lib.ui.frames.NewStaticFrame;
+import lib.ui.frames.SingleChannelStaticFrame;
 import lib.utils.Utils;
 import lib.config.VisualiserConfig;
 import lib.forms.MainWindowForm;
@@ -12,6 +11,8 @@ import lib.net.packages.base.Package;
 import lib.ui.frames.base.Frame;
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 import static lib.utils.Logging.log;
 
@@ -119,8 +120,11 @@ public class PadVisualiser {
     protected void dispatchPackage(Package data) {
         if (data instanceof PADPackage) {
             PADPackage pad = (PADPackage)data;
-            log("feeding container...");
             dataHandlerContainer.feed(((PADPackage)data).getState());
+
+            if (!config.isRealTime()) {
+                dataHandlerContainer.get().setWindow(SingleChannelStaticFrame.DEFAULT_WINDOW, SingleChannelStaticFrame.DEFAULT_ZOOM);
+            }
         }
     }
 
@@ -129,7 +133,7 @@ public class PadVisualiser {
     }
 
     protected void initLoadUI() {
-        frame = new NewStaticFrame(labelConfig);
+        frame = new SingleChannelStaticFrame(labelConfig);
     }
 
     protected void runRealTime() {
@@ -146,6 +150,7 @@ public class PadVisualiser {
         log("Sending request package...");
         send(new RequestDataPackage(-1));
         Package data;
+
         while (!mainForm.getExitApp() && (data = read()) != null) {
             dispatchPackage(data);
         }
@@ -155,15 +160,19 @@ public class PadVisualiser {
     public void run() {
         setupNetworking();
 
-        if (config.getMode().equals("auto")) {
+        if (config.isRealTime()) {
             dataHandlerContainer = PADDataHandlerContainer.getInstance(true);
-            log("got container....");
             initRealTimeUI();
             runRealTime();
-        } else {
-            log("runLoad!!!!");
+        } else if (config.isOneChannel()) {
             dataHandlerContainer = PADDataHandlerContainer.getInstance(false);
+
+            List<Integer> methods = new ArrayList<Integer>();
+            methods.add(1);
+            dataHandlerContainer.init(methods);
+
             initLoadUI();
+
             runLoad();
             log("timeAutoTuning...");
             dataHandlerContainer.autoTime();
