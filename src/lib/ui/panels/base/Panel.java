@@ -1,11 +1,14 @@
 package lib.ui.panels.base;
 
+import com.sun.servicetag.SystemEnvironment;
 import lib.types.*;
 import lib.ui.utils.PanelUpdater;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Line2D;
+
+import static lib.utils.Logging.log;
 
 /**
  * Basic type for all panels used by the visualiser.
@@ -29,7 +32,7 @@ public abstract class Panel extends JPanel {
 
     protected Graphics2D g2d = null;
 
-    protected PADDataHandler data = PADDataHandler.getInstance();
+    protected PADDataHandler data = PADDataHandlerContainer.getInstance().get();
 
     /**
      * Initializes the widget.
@@ -90,10 +93,13 @@ public abstract class Panel extends JPanel {
         g2d = (Graphics2D)graphics;
 
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                             RenderingHints.VALUE_ANTIALIAS_ON);
+                RenderingHints.VALUE_ANTIALIAS_ON);
 
         if (!data.isEmpty()) {
             customPaintComponent((Graphics2D) graphics);
+        } else {
+
+            log("empty handler: %s", data);
         }
     }
 
@@ -175,8 +181,6 @@ public abstract class Panel extends JPanel {
     protected Line2D line(int startX, int startY, int endX, int endY) {
         return line(new Coords(startX, startY), new Coords(endX, endY));
     }
-
-
 
     protected void setColor(Color color) {
         g2d.setColor(color);

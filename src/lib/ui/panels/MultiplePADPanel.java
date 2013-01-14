@@ -1,9 +1,7 @@
 package lib.ui.panels;
 
-import lib.types.Coords;
-import lib.types.PAD;
-import lib.types.PADValue;
-import lib.types.Palette;
+import lib.types.*;
+
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;

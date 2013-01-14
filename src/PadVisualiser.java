@@ -1,7 +1,7 @@
 import lib.types.PADDataHandler;
+import lib.types.PADDataHandlerContainer;
 import lib.ui.frames.DynamicFrame;
 import lib.ui.frames.NewStaticFrame;
-import lib.ui.frames.StaticFrame;
 import lib.utils.Utils;
 import lib.config.VisualiserConfig;
 import lib.forms.MainWindowForm;
@@ -34,7 +34,7 @@ public class PadVisualiser {
     protected ObjectOutputStream output;
     protected ObjectInput input;
 
-    protected PADDataHandler dataHandler;
+    protected PADDataHandlerContainer dataHandlerContainer;
 
     public static void main(String[] args) {
         // Read the labels
@@ -119,7 +119,8 @@ public class PadVisualiser {
     protected void dispatchPackage(Package data) {
         if (data instanceof PADPackage) {
             PADPackage pad = (PADPackage)data;
-            dataHandler.feed(((PADPackage)data).getState());
+            log("feeding container...");
+            dataHandlerContainer.feed(((PADPackage)data).getState());
         }
     }
 
@@ -135,6 +136,7 @@ public class PadVisualiser {
         send(new HandshakePackage(Client.VISUALISER));
         Package data;
         while (!mainForm.getExitApp() && (data = read()) != null) {
+            log("got package...");
             dispatchPackage(data);
         }
         send(new EndPackage());
@@ -154,16 +156,17 @@ public class PadVisualiser {
         setupNetworking();
 
         if (config.getMode().equals("auto")) {
-            dataHandler = PADDataHandler.getInstance(true);
+            dataHandlerContainer = PADDataHandlerContainer.getInstance(true);
+            log("got container....");
             initRealTimeUI();
             runRealTime();
         } else {
             log("runLoad!!!!");
-            dataHandler = PADDataHandler.getInstance(false);
+            dataHandlerContainer = PADDataHandlerContainer.getInstance(false);
             initLoadUI();
             runLoad();
             log("timeAutoTuning...");
-            dataHandler.autoTime();
+            dataHandlerContainer.autoTime();
         }
 
         closeNetworking();

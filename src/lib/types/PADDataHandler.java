@@ -35,11 +35,15 @@ public class PADDataHandler {
     }
 
     public boolean isEmpty() {
+        log("Size: %s", values.size());
+
         return values.isEmpty();
     }
 
     public void feed(PADState state) {
+
         synchronized (values) {
+            log("FEED: %s", values.size());
             values.add(state);
         }
     }
@@ -206,6 +210,16 @@ public class PADDataHandler {
     protected static PADDataHandler instance = null;
 
     public static PADDataHandler getInstance(boolean isRealTime) {
+
+        PADDataHandler handler = PADDataHandlerContainer.getInstance(isRealTime).get();
+
+        handler.autoTime();
+
+        log("handler: %s", handler);
+
+        return handler;
+
+        /*
         if (null == instance) {
             instance = new PADDataHandler(isRealTime);
 
@@ -215,6 +229,7 @@ public class PADDataHandler {
         }
 
         return instance;
+        //*/
     }
 
     public static PADDataHandler getInstance() {

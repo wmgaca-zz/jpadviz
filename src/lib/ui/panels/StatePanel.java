@@ -1,9 +1,6 @@
 package lib.ui.panels;
 
-import lib.types.PAD;
-import lib.types.PADState;
-import lib.types.PADValue;
-import lib.types.Palette;
+import lib.types.*;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
