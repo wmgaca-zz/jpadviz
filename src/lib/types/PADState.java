@@ -24,22 +24,27 @@ public class PADState implements Serializable {
      */
     protected long timestamp;
 
+    protected int method;
+
     protected PADState() {
-        this.timestamp = System.currentTimeMillis();
+        this(null, null, null);
     }
 
     public PADState(PADValue p, PADValue a, PADValue d) {
-        this();
-
-        this.p = p;
-        this.a = a;
-        this.d = d;
+        this(p, a, d, System.currentTimeMillis(), 1);
     }
 
     public PADState(PADValue p, PADValue a, PADValue d, long timestamp) {
-        this(p, a, d);
+        this(p, a, d, timestamp, 1);
+    }
+
+    public PADState(PADValue p, PADValue a, PADValue d, long timestamp, int method) {
+        this.p = p;
+        this.a = a;
+        this.d = d;
 
         this.timestamp = timestamp;
+        this.method = method;
     }
 
     public PADValue getP() {
@@ -72,6 +77,14 @@ public class PADState implements Serializable {
 
     public void setTimestamp(long value) {
         this.timestamp = value;
+    }
+
+    public int getMethod() {
+        return method;
+    }
+
+    public void setMethod(int value) {
+        method = value;
     }
 
     public PADValue getPADValue(PAD.Type type) {
