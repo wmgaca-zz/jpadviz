@@ -28,7 +28,7 @@ public class MultipleValuePanel extends lib.ui.panels.base.Panel {
 
             g2d.setColor(handler.getColor());
 
-            String s = String.format("%,2f / %.2f", current.getValue(), current.getCertainty());
+            String s = String.format("%.2f / %.2f", current.getValue(), current.getCertainty());
             g2d.drawString(s, margin.left, margin.top + (i * 20) + 10);
         }
     }
