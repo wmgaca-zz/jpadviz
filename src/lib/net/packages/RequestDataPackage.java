@@ -1,17 +1,29 @@
 package lib.net.packages;
 
+import java.util.ArrayList;
+
 public class RequestDataPackage extends lib.net.packages.base.Package {
 
-    protected int resultSetId;
+    protected int experimentId;
+    protected ArrayList<Integer> methods;
 
-    public RequestDataPackage(int resultSetId) {
-        super(Type.DATA);
-
-        this.resultSetId = resultSetId;
+    public RequestDataPackage(int experimentId) {
+        this(experimentId, null);
     }
 
-    public int getResultSetId() {
-        return resultSetId;
+    public RequestDataPackage(int experimentId, ArrayList<Integer> methods) {
+        super(Type.DATA);
+
+        this.experimentId = experimentId;
+        this.methods = methods;
+    }
+
+    public int getExperimentId() {
+        return experimentId;
+    }
+
+    public ArrayList<Integer> getMethods() {
+        return methods;
     }
 
 }

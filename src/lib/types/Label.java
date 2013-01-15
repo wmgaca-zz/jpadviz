@@ -100,10 +100,8 @@ public class Label {
 
         String hexColor = getAttrFromNode(labelNode, "color");
         if (null == hexColor) {
-            log("Gray!");
             label.setColor(Color.gray);
         } else {
-            log("From hex!");
             label.setColor(Color.decode(hexColor));
         }
 

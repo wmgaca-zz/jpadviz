@@ -14,7 +14,7 @@ import java.awt.*;
 
 import static lib.utils.Logging.log;
 
-public class SingleChannelStaticFrame extends Frame {
+public class SingleChannelOfflineFrame extends Frame {
 
     public static int DEFAULT_ZOOM = 10;
     public static int DEFAULT_WINDOW = 50;
@@ -25,7 +25,7 @@ public class SingleChannelStaticFrame extends Frame {
 
     protected Layout currentLayout;
 
-    public SingleChannelStaticFrame(LabelConfig labelConfig) {
+    public SingleChannelOfflineFrame(LabelConfig labelConfig) {
         super(labelConfig);
     }
 

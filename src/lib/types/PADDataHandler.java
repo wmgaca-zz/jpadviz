@@ -1,6 +1,8 @@
 package lib.types;
 
 import lib.utils.Utils;
+
+import java.awt.*;
 import java.util.ArrayList;
 
 import static lib.utils.Logging.log;
@@ -26,8 +28,12 @@ public class PADDataHandler {
      */
     protected long endTime = 0;
 
+    protected Color color;
+
     public PADDataHandler(boolean isRealTime) {
         this.isRealTime = isRealTime;
+
+        color = Palette.getNextColor();
     }
 
     public PADDataHandler() {
@@ -37,7 +43,7 @@ public class PADDataHandler {
     }
 
     public boolean isEmpty() {
-        log("Size: %s", values.size());
+
 
         return values.isEmpty();
     }
@@ -131,6 +137,22 @@ public class PADDataHandler {
         return values;
     }
 
+    public PADState getReallyLastState() {
+        if (values.isEmpty()) {
+            return null;
+        }
+
+        return values.get(values.size() - 1);
+    }
+
+    public PADState getReallyFirstState() {
+        if (values.isEmpty()) {
+            return null;
+        }
+
+        return values.get(0);
+    }
+
     public PADState getLastState() {
         if (isRealTime) {
             if (!values.isEmpty()) {
@@ -217,8 +239,6 @@ public class PADDataHandler {
 
         //handler.autoTime();
 
-        log("handler: %s", handler);
-
         return handler;
 
         /*
@@ -236,5 +256,17 @@ public class PADDataHandler {
 
     public static PADDataHandler getInstance() {
         return getInstance(true);
+    }
+
+    public void setStartTime(long value) {
+        startTime = value;
+    }
+
+    public  void setEndTime(long value) {
+        endTime = value;
+    }
+
+    public Color getColor() {
+        return color;
     }
 }

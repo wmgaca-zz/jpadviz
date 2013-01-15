@@ -23,21 +23,60 @@ public class DataHandler {
         }
     }
 
-    public ArrayList<PADState> fetchAll(int resultSetId) {
+    protected String prepareInStmt(ArrayList<Integer> values) {
+        String inStmt = "( ";
+
+        for (int i = 0; i < values.size(); ++i) {
+            if (i == values.size() - 1) {
+                inStmt += values.get(i).toString() + " ";
+            } else {
+                inStmt += values.get(i).toString() + ", ";
+            }
+        }
+        inStmt += ")";
+
+        return inStmt;
+    }
+
+    public ArrayList<PADState> fetchAll(int experimentId, ArrayList<Integer> methods) {
         ArrayList<PADState> states = new ArrayList<PADState>();
 
-        if (resultSetId == -1) {
-            resultSetId = 2;
+        log("experimentId = %s", experimentId);
+        log("methods = %s", methods);
+        log("prepared = %s", prepareInStmt(methods));
+
+        // 1. Get sessions
+        ArrayList<Integer> sessionIds = new ArrayList<Integer>();
+        String query = String.format("SELECT id FROM experiment_session WHERE method_id IN %s AND experiment_id = %s", prepareInStmt(methods), experimentId);
+        try {
+            ResultSet sessions = connection.createStatement().executeQuery(query);
+            while (sessions.next()) {
+                sessionIds.add(sessions.getInt(1));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
+        log("sessionIds = %s", sessionIds);
+        log("prepared: %s", prepareInStmt(sessionIds));
+
+        query = String.format(
+            "SELECT p, a, d, cp, ca, cd, timestamp, method_id FROM pad_value " +
+            "JOIN result_set ON result_set.id = pad_value.result_set_id " +
+            "JOIN experiment_session ON result_set.session_id = experiment_session.id " +
+            "WHERE result_set.session_id IN %s", prepareInStmt(sessionIds));
+
+        log(query);
+
         try {
-            ResultSet results = connection.createStatement().executeQuery("SELECT p, a, d, cp, ca, cd, timestamp FROM pad_value WHERE result_set_id = " + resultSetId);
+            ResultSet results = connection.createStatement().executeQuery(query);
 
             while (results.next()) {
                 states.add(new PADState(new PADValue(results.getFloat(1), results.getFloat(4), results.getLong(7)),
                                         new PADValue(results.getFloat(2), results.getFloat(5), results.getLong(7)),
                                         new PADValue(results.getFloat(3), results.getFloat(6), results.getLong(7)),
-                                        results.getLong(7)));
+                                        results.getLong(7),
+                                        results.getInt(8)));
             }
         } catch (SQLException e) {
             e.printStackTrace();

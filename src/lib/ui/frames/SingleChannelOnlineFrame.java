@@ -11,7 +11,7 @@ import java.awt.*;
 
 import static lib.utils.Logging.log;
 
-public class DynamicFrame extends Frame {
+public class SingleChannelOnlineFrame extends Frame {
 
     public enum Layout {
         FULL,
@@ -21,7 +21,7 @@ public class DynamicFrame extends Frame {
 
     protected Layout currentLayout;
 
-    public DynamicFrame(LabelConfig labelConfig) {
+    public SingleChannelOnlineFrame(LabelConfig labelConfig) {
         super(labelConfig);
     }
 
@@ -85,7 +85,7 @@ public class DynamicFrame extends Frame {
         // Middle left: SinglePADPanel for P, A, D
         JPanel middleLeftContainer = new JPanel();
         middleLeftContainer.setLayout(new BoxLayout(middleLeftContainer, BoxLayout.Y_AXIS));
-        addToContainer(middleLeftContainer, new MultiplePADPanel(600, 200));
+        addToContainer(middleLeftContainer, new PADPanel(PAD.Type.P, 600, 200));
         addToContainer(middleLeftContainer, new PADPanel(PAD.Type.A, 600, 200));
         addToContainer(middleLeftContainer, new PADPanel(PAD.Type.D, 600, 200));
 

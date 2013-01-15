@@ -1,6 +1,7 @@
 import lib.types.PADDataHandlerContainer;
-import lib.ui.frames.DynamicFrame;
-import lib.ui.frames.SingleChannelStaticFrame;
+import lib.ui.frames.MultipleChannelOfflineFrame;
+import lib.ui.frames.SingleChannelOnlineFrame;
+import lib.ui.frames.SingleChannelOfflineFrame;
 import lib.utils.Utils;
 import lib.config.VisualiserConfig;
 import lib.forms.MainWindowForm;
@@ -119,21 +120,24 @@ public class PadVisualiser {
 
     protected void dispatchPackage(Package data) {
         if (data instanceof PADPackage) {
-            PADPackage pad = (PADPackage)data;
             dataHandlerContainer.feed(((PADPackage)data).getState());
 
             if (!config.isRealTime()) {
-                dataHandlerContainer.get().setWindow(SingleChannelStaticFrame.DEFAULT_WINDOW, SingleChannelStaticFrame.DEFAULT_ZOOM);
+                dataHandlerContainer.get().setWindow(SingleChannelOfflineFrame.DEFAULT_WINDOW, SingleChannelOfflineFrame.DEFAULT_ZOOM);
             }
         }
     }
 
     protected void initRealTimeUI() {
-        frame = new DynamicFrame(labelConfig);
+        frame = new SingleChannelOnlineFrame(labelConfig);
     }
 
     protected void initLoadUI() {
-        frame = new SingleChannelStaticFrame(labelConfig);
+        if (config.isOneChannel()) {
+            frame = new SingleChannelOfflineFrame(labelConfig);
+        } else if (config.isMultiChannel()) {
+            frame = new MultipleChannelOfflineFrame(labelConfig);
+        }
     }
 
     protected void runRealTime() {
@@ -148,7 +152,10 @@ public class PadVisualiser {
 
     protected void runLoad() {
         log("Sending request package...");
-        send(new RequestDataPackage(-1));
+
+        //ArrayList<Integer> methods = config.getChannels();
+
+        send(new RequestDataPackage(config.getExperimentId(), config.getChannels())); //config.getExperimentId(), config.getCId()));
         Package data;
 
         while (!mainForm.getExitApp() && (data = read()) != null) {
@@ -164,17 +171,16 @@ public class PadVisualiser {
             dataHandlerContainer = PADDataHandlerContainer.getInstance(true);
             initRealTimeUI();
             runRealTime();
-        } else if (config.isOneChannel()) {
+        } else {
             dataHandlerContainer = PADDataHandlerContainer.getInstance(false);
-
-            List<Integer> methods = new ArrayList<Integer>();
-            methods.add(1);
-            dataHandlerContainer.init(methods);
+            dataHandlerContainer.init(config.getChannels());
 
             initLoadUI();
 
             runLoad();
+
             log("timeAutoTuning...");
+
             dataHandlerContainer.autoTime();
         }
 

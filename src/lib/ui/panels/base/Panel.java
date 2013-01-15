@@ -32,7 +32,7 @@ public abstract class Panel extends JPanel {
 
     protected Graphics2D g2d = null;
 
-    protected PADDataHandler data = PADDataHandlerContainer.getInstance().get();
+    protected PADDataHandler data;
 
     /**
      * Initializes the widget.
@@ -58,6 +58,8 @@ public abstract class Panel extends JPanel {
         this.label = PAD.getName(type);
 
         PanelUpdater.handle(this);
+
+        data = PADDataHandlerContainer.getInstance().get();
     }
 
     /**
@@ -97,9 +99,6 @@ public abstract class Panel extends JPanel {
 
         if (!data.isEmpty()) {
             customPaintComponent((Graphics2D) graphics);
-        } else {
-
-            log("empty handler: %s", data);
         }
     }
 

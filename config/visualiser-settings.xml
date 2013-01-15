@@ -9,6 +9,6 @@
     <layout></layout>
 
     <!-- TODO -->
-    <session id="3" channels="1, 2, 5" />
+    <session id="2" channels="1" />
 
 </settings>

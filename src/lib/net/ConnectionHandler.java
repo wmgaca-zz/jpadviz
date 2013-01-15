@@ -105,7 +105,10 @@ public class ConnectionHandler implements Runnable {
                 // ...
             }
         } else if (data instanceof RequestDataPackage) {
-            ArrayList<PADState> states = db.fetchAll(((RequestDataPackage) data).getResultSetId());
+            int experimentId = ((RequestDataPackage)data).getExperimentId();
+            ArrayList<Integer> methods = ((RequestDataPackage)data).getMethods();
+
+            ArrayList<PADState> states = db.fetchAll(experimentId, methods);
 
             for (PADState state : states) {
                 send(new PADPackage(state));

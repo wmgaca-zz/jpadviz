@@ -5,18 +5,25 @@ import lib.types.*;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
+import java.util.Map;
+
 import static lib.utils.Logging.log;
 
 public class MultiplePADPanel extends lib.ui.panels.base.Panel {
 
-    public MultiplePADPanel(int width, int height) {
-        super(PAD.Type.PAD, width, height);
+    public MultiplePADPanel(PAD.Type type, int width, int height) {
+        super(type, width, height);
     }
 
-    protected void drawSingle(PAD.Type type, Color color) {
-        ArrayList<PADValue> values = data.getCurrentValues(type);
+    protected void drawSingle(PADDataHandler handler) {
+        drawSingle(handler, handler.getColor());
+    }
+
+    protected void drawSingle(PADDataHandler handler, Color color) {
+        ArrayList<PADValue> values = handler.getCurrentValues(type);
 
         if (0 == values.size()) {
+
             return;
         }
 
@@ -31,11 +38,6 @@ public class MultiplePADPanel extends lib.ui.panels.base.Panel {
         draw(line(margin.left, getCenterY(), getWidth() - margin.right, getCenterY()), Palette.black);
         draw(line(margin.left, margin.top + getH(), getWidth() - margin.right, margin.top + getH()), Palette.black);
 
-        // Draw the value
-        g2d.drawString(
-                String.format("%s: %.2f (%.2f)", label, last.getValue(), last.getCertainty()),
-                this.getWidth() - 90, 25);
-
 
         PADValue prevValue = null;
 
@@ -46,7 +48,7 @@ public class MultiplePADPanel extends lib.ui.panels.base.Panel {
         prev = new Coords(0, 0);
 
         // Compute start point's Y at X = 0
-        ArrayList<PADValue> preBuffer = data.getValuesPreCurrentBuffer(type);
+        ArrayList<PADValue> preBuffer = handler.getValuesPreCurrentBuffer(type);
 
         if (0 != preBuffer.size()) {
             PADValue firstValue = values.get(0);
@@ -56,7 +58,7 @@ public class MultiplePADPanel extends lib.ui.panels.base.Panel {
             float prevValueY = getYForValue(prevValue.getValue());
 
             long distance = firstValue.getTimestamp() - prevValue.getTimestamp(); // distance between points
-            long lost = data.getCurrentStartTime() - firstValue.getTimestamp(); // distance out of borders
+            long lost = handler.getCurrentStartTime() - firstValue.getTimestamp(); // distance out of borders
 
             float deltaY = (firstValueY - prevValueY) * (float)lost / (float)distance;
 
@@ -64,8 +66,8 @@ public class MultiplePADPanel extends lib.ui.panels.base.Panel {
                               (int)((float)firstValueY + deltaY));
         }
 
-        long currentStartTime = data.getCurrentStartTime();
-        long currentEndTime = data.getCurrentEndTime();
+        long currentEndTime = handler.getCurrentEndTime();
+        long currentStartTime = handler.getCurrentStartTime();
 
         for (PADValue pad : values) {
             current = new Coords(getXForTime(pad.getTimestamp(), currentStartTime, currentEndTime),
@@ -82,7 +84,7 @@ public class MultiplePADPanel extends lib.ui.panels.base.Panel {
         }
 
         // Compute end point's Y
-        ArrayList<PADValue> postBuffer = data.getValuesPostCurrentBuffer(type);
+        ArrayList<PADValue> postBuffer = handler.getValuesPostCurrentBuffer(type);
         if (0 != postBuffer.size() && prevValue != null) {
             PADValue nextValue = postBuffer.get(0);
 
@@ -90,7 +92,7 @@ public class MultiplePADPanel extends lib.ui.panels.base.Panel {
             float nextValueY = getYForValue(nextValue.getValue());
 
             long distance = nextValue.getTimestamp() - prevValue.getTimestamp(); // distance between points
-            long present = data.getCurrentEndTime() - last.getTimestamp();
+            long present = handler.getCurrentEndTime() - last.getTimestamp();
 
             float deltaY = (nextValueY - lastValueY) * (float)present / (float)distance;
 
@@ -123,9 +125,9 @@ public class MultiplePADPanel extends lib.ui.panels.base.Panel {
 
     @Override
     public void customPaintComponent() {
-        drawSingle(PAD.Type.P, Palette.red);
-        drawSingle(PAD.Type.A, Palette.black);
-        drawSingle(PAD.Type.D, Palette.blue);
+        for (Map.Entry<Integer, PADDataHandler> entry : PADDataHandlerContainer.getInstance().getAll().entrySet()) {
+            drawSingle(entry.getValue());
+        }
     }
 
     /**

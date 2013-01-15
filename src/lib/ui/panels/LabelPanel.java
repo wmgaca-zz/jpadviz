@@ -8,8 +8,6 @@ import lib.utils.Utils;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
-import static lib.utils.Logging.log;
-
 public class LabelPanel extends Panel {
 
     protected static LabelPanel instance = null;
@@ -33,7 +31,6 @@ public class LabelPanel extends Panel {
 
     @Override
     public void customPaintComponent(Graphics2D g2d) {
-        log("label customPaintComponent!!!!");
         // Draw bottom Y line
         g2d.setColor(Palette.black);
         g2d.drawLine(margin.left, margin.top + getH(), getWidth() - margin.right, margin.top + getH());
@@ -53,11 +50,12 @@ public class LabelPanel extends Panel {
             int border = 2;
 
             g2d.setColor(label.getColor());
-            Rectangle2D rect = new Rectangle.Double(x, getCenterY() - labelHeight, labelWidth + 2 * border, labelHeight + 2 * border);
+            Rectangle2D rect = new Rectangle.Double(x, getCenterY() - labelHeight / 2, labelWidth + 2 * border, labelHeight + 2 * border);
             g2d.fill(rect);
+            g2d.setColor(Palette.white);
             g2d.draw(rect);
             g2d.setColor(Utils.getNegative(label.getColor()));
-            g2d.drawString(label.getName(), x + border, getCenterY() + border);
+            g2d.drawString(label.getName(), x + border, getCenterY() + border + labelHeight / 2);
         }
     }
 }
