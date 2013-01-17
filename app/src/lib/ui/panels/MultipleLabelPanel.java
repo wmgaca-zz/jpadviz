@@ -37,7 +37,6 @@ public class MultipleLabelPanel extends Panel {
 
         // Draw bottom Y line
         g2d.setColor(Palette.black);
-        log("getW: %s", getW());
         draw(line(margin.left, margin.top, getW(), margin.top), Palette.black);
 
         int y = 40;

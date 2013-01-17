@@ -1,5 +1,8 @@
 package lib.types;
 
+/**
+ *
+ */
 public class Margin {
 
     public int top;

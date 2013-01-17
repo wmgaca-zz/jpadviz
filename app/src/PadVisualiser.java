@@ -70,8 +70,7 @@ public class PadVisualiser {
             output = new ObjectOutputStream(socket.getOutputStream());
             input = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
-            Utils.exitOnException(e);
-            log("Cannot get I/O");
+            Utils.exitOnException(e, "Cannot get I/O");
         }
 
         log("Network set up.");

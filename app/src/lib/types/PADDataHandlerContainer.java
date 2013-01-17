@@ -1,7 +1,5 @@
 package lib.types;
 
-import javafx.beans.property.MapProperty;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

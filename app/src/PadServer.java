@@ -15,7 +15,7 @@ import static lib.utils.Logging.log;
 public class PadServer {
 
     public static String workingDir = System.getProperty("user.dir");
-    public static File serverConfigFile = new File(PadServer.workingDir, "config/server-settings.xml");
+    public static File  serverConfigFile = new File(PadServer.workingDir, "config/server-settings.xml");
     public static ServerConfig config = new ServerConfig(PadServer.serverConfigFile);
     public static int connections = 0;
     public static DataHandler db = null;

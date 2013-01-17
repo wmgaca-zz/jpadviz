@@ -8,18 +8,54 @@ import java.awt.*;
 
 import static lib.utils.Logging.log;
 
+/**
+ * Representation of a single label.
+ */
 public class Label {
 
+    /**
+     * Label name.
+     */
     public String name;
+
+    /**
+     * Label color.
+     */
     public Color color = Color.lightGray;
 
+    /**
+     * Minimum P value.
+     */
     public float pMin;
+
+    /**
+     * Maximum P value.
+     */
     public float pMax;
+
+    /**
+     * Minimum A value.
+     */
     public float aMin;
+
+    /**
+     * Maximum A value.
+     */
     public float aMax;
+
+    /**
+     * Minimum D value.
+     */
     public float dMin;
+
+    /**
+     * Maximum D value.
+     */
     public float dMax;
 
+    /**
+     * Default constructor: creates an empty label with a maximum value range.
+     */
     public Label() {
         name = "Unknown";
 
@@ -27,65 +63,94 @@ public class Label {
         pMax = aMax = dMax = 1.0f;
     }
 
+    /**
+     * Initializes a label instance with a name.
+     *
+     * @param name
+     */
     public Label(String name) {
         this();
 
         this.name = name;
     }
 
-    public Label(String name, float pMin, float pMax, float aMin, float aMax, float dMin, float dMax) {
-        this(name);
-
-        this.pMin = pMin;
-        this.pMax = pMax;
-        this.aMin = aMin;
-        this.aMax = aMax;
-        this.dMin = dMin;
-        this.dMax = dMax;
-    }
-
+    /**
+     * @return Label string representation
+     */
     public String toString() {
         return String.format("<Label(name=%s,p=[%s,%s],a=[%s,%s],d=[%s,%s])>",
                              name, pMin, pMax, aMin, aMax, dMin, dMax);
     }
 
+    /**
+     * @param value Maximum P value
+     */
     public void setPMax(String value) {
         pMax = Float.parseFloat(value);
     }
 
+    /**
+     * @param value Minimum P value
+     */
     public void setPMin(String value) {
         pMin = Float.parseFloat(value);
     }
 
+    /**
+     * @param value Maximum A value
+     */
     public void setAMax(String value) {
         this.aMax = Float.parseFloat(value);
     }
 
+    /**
+     * @param value Minimum A value
+     */
     public void setAMin(String value) {
         this.aMin = Float.parseFloat(value);
     }
 
+    /**
+     * @param value Maximum D value
+     */
     public void setDMax(String value) {
         this.dMax = Float.parseFloat(value);
     }
 
+    /**
+     * @param value Minimum D value
+     */
     public void setDMin(String value) {
         this.dMin = Float.parseFloat(value);
     }
 
+    /**
+     * @return Label name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @return Label color
+     */
     public Color getColor() {
         return color;
     }
 
+    /**
+     * @param value Label color
+     */
     public void setColor(Color value) {
         color = value;
     }
 
-
+    /**
+     * For config parsing purpose: return attribute's value from a node
+     * @param attrNode Node objecet
+     * @param attrName Attribute name
+     * @return Attribute's value
+     */
     private static String getAttrFromNode(Node attrNode, String attrName) {
         if (!attrNode.hasAttributes()) {
             return null;
@@ -95,6 +160,12 @@ public class Label {
         return (node != null) ? node.getNodeValue() : null;
     }
 
+    /**
+     * Create a label from document's node.
+     *
+     * @param labelNode Document node representing a label
+     * @return Label instance
+     */
     public static Label fromNode(Node labelNode) {
         Label label = new Label(getAttrFromNode(labelNode, "name"));
 
@@ -125,6 +196,12 @@ public class Label {
         return label;
     }
 
+    /**
+     * Check if a given PAD state matches the label.
+     *
+     * @param state PAD state
+     * @return true if the state matches the label, false otherwise
+     */
     public boolean match(PADState state) {
         if (state.getP().getValue() > pMax || state.getP().getValue() < pMin) {
             return false;
@@ -137,12 +214,5 @@ public class Label {
         return true;
     }
 
-    public float calculateDistance(PADState state) {
-        float centerP = this.pMin + (this.pMax - this.pMin) / 2;
-        float centerA = this.pMin + (this.aMax - this.aMin) / 2;
-        float centerD = this.pMin + (this.dMax - this.dMin) / 2;
-
-        return Utils.abs(state.getP().getValue() - centerP) + Utils.abs(state.getA().getValue() - centerA) + Utils.abs(state.getD().getValue() - centerD);
-    }
 
 }

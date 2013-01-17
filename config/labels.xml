@@ -1,0 +1,14 @@
+<labels>
+    <label name="Happy" color="#ffffee">
+        <p min="0.3" max="0.5" />
+    </label>
+    <label name="Sad" color="#000000">
+        <p min="-1.0" max="-0.1" />
+    </label>
+    <label name="Normal" color="#ffffff">
+        <p min="0.5" max="1.0" />
+    </label>
+    <label name="Foo" color="#ffffee">
+        <p min="-1.0" max="1.0" />
+    </label>
+</labels>

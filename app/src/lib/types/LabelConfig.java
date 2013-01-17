@@ -10,10 +10,21 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Handling of label information
+ */
 public class LabelConfig {
 
+    /**
+     * List of used labels.
+     */
     private List<Label> labels = new ArrayList<Label>();
 
+    /**
+     * Default constructor.
+     *
+     * @param labelConfigFile Label XML config
+     */
     public LabelConfig(File labelConfigFile) {
         Document doc = ConfigHandler.parseDocument(labelConfigFile);
         if (doc == null) {
@@ -34,13 +45,20 @@ public class LabelConfig {
         }
     }
 
+    /**
+     * @return All labels
+     */
     public List<Label> getLabels() {
         return this.labels;
     }
 
+    /**
+     * Get labels matching given state.
+     *
+     * @param state PAD state
+     * @return Labels matching given state
+     */
     public Label getMatchingLabel(PADState state) {
-        //List<Label> matching = new ArrayList<Label>();
-
         for (Label label : this.labels) {
               if (label.match(state)) {
                   return label;
@@ -48,28 +66,6 @@ public class LabelConfig {
         }
 
         return new Label("Empty");
-
-        /*
-        if (0 == matching.size()) {
-            return new Label("Empty");
-        }
-
-        Label result = null;
-        float distance = 0;
-        for (Label label : matching) {
-            if (null == result) {
-                result = label;
-                distance = label.calculateDistance(state);
-            } else {
-                if (distance > label.calculateDistance(state)) {
-                    result = label;
-                    distance = label.calculateDistance(state);
-                }
-            }
-        }
-
-        return result;
-        //*/
     }
 
 }
