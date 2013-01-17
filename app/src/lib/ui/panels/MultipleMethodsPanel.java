@@ -10,12 +10,24 @@ import java.util.Map;
 
 import static lib.utils.Logging.log;
 
+/**
+ * Widget shows used method and assigned colors.
+ */
 public class MultipleMethodsPanel extends lib.ui.panels.base.Panel {
 
+    /**
+     * @param width Width
+     * @param height Height
+     */
     public MultipleMethodsPanel(int width, int height) {
         super(PAD.Type.PAD, width, height);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param g2d Graphics object to be drawn
+     */
     @Override
     public void customPaintComponent(Graphics2D g2d) {
         Map<Integer, PADDataHandler> map = PADDataHandlerContainer.getInstance().getAll();

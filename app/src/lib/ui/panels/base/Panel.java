@@ -30,8 +30,14 @@ public abstract class Panel extends JPanel {
      */
     protected Margin margin = new Margin(10, 10, 10, 10);
 
+    /**
+     * G2D for drawing on the panel.
+     */
     protected Graphics2D g2d = null;
 
+    /**
+     * Data handler instance.
+     */
     protected PADDataHandler data;
 
     /**
@@ -63,6 +69,7 @@ public abstract class Panel extends JPanel {
     }
 
     /**
+     * Repaints the widget.
      */
     public final void update() {
         repaint();
@@ -77,6 +84,9 @@ public abstract class Panel extends JPanel {
         customPaintComponent();
     }
 
+    /**
+     * Widget's drawing logic. This method is called by Panel.paintComponent.
+     */
     public void customPaintComponent() {
 
     }
@@ -157,13 +167,12 @@ public abstract class Panel extends JPanel {
         return margin.left + (int)((relativeTime / timeSpan) * (double)getW());
     }
 
-    protected void draw(Shape shape) {
-        draw(shape, g2d.getColor());
-    }
-
-    protected void draw(String string) {
-    }
-
+    /**
+     * Draw a shape to the panel.
+     *
+     * @param shape Shape to be drawn
+     * @param color Color to be set
+     */
     protected void draw(Shape shape, Color color) {
         Color initColor = g2d.getColor();
         g2d.setColor(color);
@@ -173,14 +182,35 @@ public abstract class Panel extends JPanel {
         g2d.setColor(initColor);
     }
 
+    /**
+     * Get a line instance
+     *
+     * @param start Line's tart coordinates
+     * @param end Line's end coordinates
+     * @return Line instance
+     */
     protected Line2D line(Coords start, Coords end) {
         return new Line2D.Double(start.getX(), start.getY(), end.getX(), end.getY());
     }
 
+    /**
+     * Get a line instance
+     *
+     * @param startX Line's start X coordinate
+     * @param startY Line's start Y coordinate
+     * @param endX Line's end X coordinate
+     * @param endY Line's end Y coordinate
+     * @return Line instance
+     */
     protected Line2D line(int startX, int startY, int endX, int endY) {
         return line(new Coords(startX, startY), new Coords(endX, endY));
     }
 
+    /**
+     * Set drawing color
+     *
+     * @param color Color to be set
+     */
     protected void setColor(Color color) {
         g2d.setColor(color);
     }

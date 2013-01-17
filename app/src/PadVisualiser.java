@@ -12,32 +12,84 @@ import lib.net.packages.base.Package;
 import lib.ui.frames.base.Frame;
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-
 import static lib.utils.Logging.log;
 
+/**
+ * PAD visualiser
+ */
 public class PadVisualiser {
 
+    /**
+     * App working dir
+     */
     protected static String workingDir = System.getProperty("user.dir");
+
+    /**
+     * Label config file
+     */
     protected static File labelConfigFile = new File(PadVisualiser.workingDir, "config/labels.xml");
+
+    /**
+     * Visualiser config file
+     */
     protected static File configFile = new File(PadVisualiser.workingDir, "config/visualiser-settings.xml");
 
+    /**
+     * Visualiser config handler
+     */
     protected VisualiserConfig config = new VisualiserConfig(configFile);
 
-    protected MainWindowForm mainForm = new MainWindowForm();
+    /**
+     * Label config handler
+     */
     protected LabelConfig labelConfig = null;
 
+    /**
+     * Main form
+     */
+    protected MainWindowForm mainForm = new MainWindowForm();
+
+    /**
+     * Main frame
+     */
     protected Frame frame;
 
+    /**
+     * Server host
+     */
     protected String serverHost;
+
+    /**
+     * Server port
+     */
     protected int serverPort;
+
+    /**
+     * Connection socket
+     */
     protected Socket socket;
+
+    /**
+     * Output stream (for sending packages to server)
+     */
     protected ObjectOutputStream output;
+
+    /**
+     * Input stream (for reading packages sent by the server)
+     */
     protected ObjectInput input;
 
+
+    /**
+     * PAD states handler
+     */
     protected PADDataHandlerContainer dataHandlerContainer;
 
+    /**
+     * Entry point
+     *
+     * @param args
+     */
     public static void main(String[] args) {
         // Read the labels
         LabelConfig labelConfig = new LabelConfig(labelConfigFile);
@@ -46,10 +98,16 @@ public class PadVisualiser {
         padVisualiser.run();
     }
 
+    /**
+     * @param labelConfig Label config object
+     */
     public PadVisualiser(LabelConfig labelConfig) {
         this.labelConfig = labelConfig;
     }
 
+    /**
+     * Configure networking, connect to the server and set up streams for writing and reading
+     */
     public void setupNetworking() {
         serverHost = PadDummyClient.config.getHost();
         serverPort = PadDummyClient.config.getPort();
@@ -76,6 +134,9 @@ public class PadVisualiser {
         log("Network set up.");
     }
 
+    /**
+     * Tear down server connection
+     */
     protected void closeNetworking() {
         try {
             this.socket.close();
@@ -84,6 +145,12 @@ public class PadVisualiser {
         }
     }
 
+    /**
+     * Send a package to the server
+     *
+     * @param data Package
+     * @return true on success, false otherwise
+     */
     protected boolean send(Package data) {
         if (null == this.output) {
             this.setupNetworking();
@@ -99,6 +166,11 @@ public class PadVisualiser {
         return true;
     }
 
+    /**
+     * Read a package from server
+     *
+     * @return Package
+     */
     protected Package read() {
         Package data = null;
 
@@ -117,6 +189,11 @@ public class PadVisualiser {
         return data;
     }
 
+    /**
+     * Package handling logic
+     *
+     * @param data
+     */
     protected void dispatchPackage(Package data) {
         if (data instanceof PADPackage) {
             dataHandlerContainer.feed(((PADPackage)data).getState());
@@ -127,10 +204,17 @@ public class PadVisualiser {
         }
     }
 
+    /**
+     * Init user interface for real time mode
+     */
     protected void initRealTimeUI() {
         frame = new SingleChannelOnlineFrame(labelConfig);
     }
 
+
+    /**
+     * Init user interface for off-line mode
+     */
     protected void initLoadUI() {
         if (config.isOneChannel()) {
             frame = new SingleChannelOfflineFrame(labelConfig);
@@ -139,6 +223,9 @@ public class PadVisualiser {
         }
     }
 
+    /**
+     * Run the app in real time mode
+     */
     protected void runRealTime() {
         send(new HandshakePackage(Client.VISUALISER));
         Package data;
@@ -149,10 +236,11 @@ public class PadVisualiser {
         send(new EndPackage());
     }
 
+    /**
+     * Run the app in off-line mode
+     */
     protected void runLoad() {
         log("Sending request package...");
-
-        //ArrayList<Integer> methods = config.getChannels();
 
         send(new RequestDataPackage(config.getExperimentId(), config.getChannels())); //config.getExperimentId(), config.getCId()));
         Package data;
@@ -163,6 +251,9 @@ public class PadVisualiser {
         log("Data loaded.");
     }
 
+    /**
+     * Run the app
+     */
     public void run() {
         setupNetworking();
 
@@ -184,9 +275,5 @@ public class PadVisualiser {
         }
 
         closeNetworking();
-    }
-
-    public void toggleLayout() {
-        frame.setVisible(true);
     }
 }

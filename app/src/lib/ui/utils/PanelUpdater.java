@@ -4,6 +4,9 @@ import lib.ui.panels.base.Panel;
 
 import java.util.ArrayList;
 
+/**
+ * Updates a panel.
+ */
 public class PanelUpdater implements Runnable {
 
     /**
@@ -22,7 +25,7 @@ public class PanelUpdater implements Runnable {
     protected static int fps = 100;
 
     /**
-     * {@inheritDoc}
+     * Entry point.
      */
     @Override
     public void run() {

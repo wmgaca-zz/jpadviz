@@ -8,12 +8,26 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 
+/**
+ * Draw PAD value chart for on-line single-channel mode
+ */
 public class PADPanel extends lib.ui.panels.base.Panel {
 
     public PADPanel(PAD.Type type, int width, int height) {
         super(type, width, height);
     }
 
+    /**
+     * Draw a polygon gradient
+     *
+     * @param x
+     * @param y
+     * @param prevX
+     * @param prevY
+     * @param currentValue
+     * @param prevValue
+     * @param g2d
+     */
     private void drawPolygon(int x, int y, int prevX, int prevY, PADValue currentValue, PADValue prevValue, Graphics2D g2d) {
         g2d.setColor(Palette.transparent);
 
@@ -41,6 +55,11 @@ public class PADPanel extends lib.ui.panels.base.Panel {
         g2d.drawLine(prevX, prevY, x, y);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param g2d Graphics object to be drawn
+     */
     @Override
     public void customPaintComponent(Graphics2D g2d) {
         ArrayList<PADValue> values = data.getCurrentValues(type);

@@ -8,8 +8,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
+/**
+ * Main menu handler
+ */
 public final class MainMenu {
 
+    /**
+     * Possible actions
+     */
     public enum Action {
         STAY_ON_TOP,
         LAYOUT_FULL,
@@ -17,8 +23,17 @@ public final class MainMenu {
         LAYOUT_MIN_RADAR
     }
 
+    /**
+     * Menu object instance
+     */
     private static JMenuBar instance = null;
 
+    /**
+     * This method should be used to acquire menu object
+     *
+     * @param frame Frame
+     * @return Menu object
+     */
     public static JMenuBar getInstance(final Frame frame) {
         if (instance == null) {
             synchronized (MainMenu.class) {
@@ -31,6 +46,12 @@ public final class MainMenu {
         return instance;
     }
 
+    /**
+     * Menu's file node
+     *
+     * @param frame Frame
+     * @return File submenu
+     */
     private static JMenu getFileMenu(final Frame frame) {
         JMenu file = new JMenu("File");
 
@@ -51,6 +72,12 @@ public final class MainMenu {
         return file;
     }
 
+    /**
+     * Menu's view node
+     *
+     * @param frame Frame
+     * @return View submenu
+     */
     private static JMenu getViewMenu(final Frame frame) {
         JMenu view = new JMenu("View");
 
@@ -136,6 +163,12 @@ public final class MainMenu {
         return view;
     }
 
+    /**
+     * Assemble a menu bar.
+     *
+     * @param frame Frame
+     * @return Menu bar
+     */
     private static JMenuBar getMenuBar(final Frame frame) {
         JMenuBar menuBar = new JMenuBar();
 
@@ -144,10 +177,4 @@ public final class MainMenu {
 
         return menuBar;
     }
-
-    private MainMenu() {
-    }
-
-
-
 }

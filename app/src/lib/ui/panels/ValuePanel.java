@@ -7,12 +7,20 @@ import lib.types.Palette;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
+/**
+ * Draw single value's values
+ */
 public class ValuePanel extends lib.ui.panels.base.Panel {
 
     public ValuePanel(PAD.Type type, int width, int height) {
         super(type, width, height);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param g2d Graphics object to be drawn
+     */
     @Override
     public void customPaintComponent(Graphics2D g2d) {
         PADValue current = data.getLastValue(type);

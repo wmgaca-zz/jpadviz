@@ -10,10 +10,24 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import static lib.utils.Logging.log;
 
+/**
+ * Off-line multiple-channel label widget.
+ */
 public class MultipleLabelPanel extends Panel {
 
+    /**
+     * Widget's instance
+     */
     protected static MultipleLabelPanel instance = null;
 
+    /**
+     * Get windget's instance (there should be only one)
+     *
+     * @param width Width
+     * @param height Height
+     * @param labelConfig Label config instance
+     * @return Widget instance
+     */
     public static MultipleLabelPanel getInstance(int width, int height, LabelConfig labelConfig) {
         if (null == instance) {
             instance = new MultipleLabelPanel(width, height, labelConfig);
@@ -22,8 +36,16 @@ public class MultipleLabelPanel extends Panel {
         return instance;
     }
 
+    /**
+     * Label config object
+     */
     protected LabelConfig labelConfig;
 
+    /**
+     * @param width Width
+     * @param height Height
+     * @param labelConfig Label config object
+     */
     public MultipleLabelPanel(int width, int height, LabelConfig labelConfig) {
         super(PAD.Type.PAD, width, height);
 
@@ -31,6 +53,11 @@ public class MultipleLabelPanel extends Panel {
         //this.margin.right = 50;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param g2d Graphics object to be drawn
+     */
     @Override
     public void customPaintComponent(Graphics2D g2d) {
         ArrayList<PADDataHandler> handlers = PADDataHandlerContainer.getInstance().getList();

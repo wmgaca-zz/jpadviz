@@ -2,6 +2,9 @@ package lib.types;
 
 import java.io.Serializable;
 
+/**
+ * Class for handling PAD state information.
+ */
 public class PADState implements Serializable {
 
     /**
@@ -24,20 +27,51 @@ public class PADState implements Serializable {
      */
     protected long timestamp;
 
+    /**
+     * Method used for data collection
+     */
     protected int method;
 
+    /**
+     * Create an empty state.
+     */
     protected PADState() {
         this(null, null, null);
     }
 
+    /**
+     * Create a new state, init with given values, current time and default method.
+     *
+     * @param p P value
+     * @param a A value
+     * @param d D value
+     */
     public PADState(PADValue p, PADValue a, PADValue d) {
         this(p, a, d, System.currentTimeMillis(), 1);
     }
+
+    /**
+     * Create a new state, init with given values, time and default method.
+     *
+     * @param p P value
+     * @param a A value
+     * @param d D value
+     * @param timestamp Timestamp
+     */
 
     public PADState(PADValue p, PADValue a, PADValue d, long timestamp) {
         this(p, a, d, timestamp, 1);
     }
 
+    /**
+     * Create a new state, init with given values, time and method.
+     *
+     * @param p P value
+     * @param a A value
+     * @param d D value
+     * @param timestamp State's timestamp
+     * @param method Method used to collect the data
+     */
     public PADState(PADValue p, PADValue a, PADValue d, long timestamp, int method) {
         this.p = p;
         this.a = a;
@@ -87,6 +121,10 @@ public class PADState implements Serializable {
         method = value;
     }
 
+    /**
+     * @param type Value type
+     * @return Given value from the state
+     */
     public PADValue getPADValue(PAD.Type type) {
         switch (type) {
             case P:
@@ -100,11 +138,17 @@ public class PADState implements Serializable {
         }
     }
 
+    /**
+     * @return State's string representation
+     */
     @Override
     public String toString() {
         return String.format("<PADState(p=%s,a=%s,d=%s)", p, a, d);
     }
 
+    /**
+     * @return A new state with random metric values
+     */
     public static PADState getRandom() {
         return new PADState(PADValue.getRandom(), PADValue.getRandom(), PADValue.getRandom());
     }

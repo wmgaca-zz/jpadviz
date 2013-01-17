@@ -13,9 +13,18 @@ import java.net.UnknownHostException;
 
 import static lib.utils.Logging.log;
 
+/**
+ * Sample data source implementation
+ */
 public class PadDummyClient {
     public static ServerConfig config = PadServer.config;
 
+    /**
+     * Entry point
+     *
+     * @param args
+     * @throws InterruptedException
+     */
     public static void main(String[] args) throws InterruptedException {
         String host = PadDummyClient.config.getHost();
         int port = PadDummyClient.config.getPort();

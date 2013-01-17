@@ -9,16 +9,30 @@ import java.util.Map;
 
 import static lib.utils.Logging.log;
 
+/**
+ * Off-line, multiple-channel single PAD value chart
+ */
 public class MultiplePADPanel extends lib.ui.panels.base.Panel {
 
     public MultiplePADPanel(PAD.Type type, int width, int height) {
         super(type, width, height);
     }
 
+    /**
+     * Draw single value on the chart
+     *
+     * @param handler Data handler
+     */
     protected void drawSingle(PADDataHandler handler) {
         drawSingle(handler, handler.getColor());
     }
 
+    /**
+     * Draw single value on the chart
+     *
+     * @param handler Data handler
+     * @param color Value's color
+     */
     protected void drawSingle(PADDataHandler handler, Color color) {
         ArrayList<PADValue> values = handler.getCurrentValues(type);
 
@@ -123,6 +137,9 @@ public class MultiplePADPanel extends lib.ui.panels.base.Panel {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void customPaintComponent() {
         for (Map.Entry<Integer, PADDataHandler> entry : PADDataHandlerContainer.getInstance().getAll().entrySet()) {

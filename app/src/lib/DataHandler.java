@@ -9,10 +9,23 @@ import java.util.ArrayList;
 
 import static lib.utils.Logging.log;
 
+/**
+ * Handle database connection and provide useful methods for acquiring data
+ */
 public class DataHandler {
 
+    /**
+     * Database connection
+     */
     protected Connection connection;
 
+    /**
+     *
+     * @param connectionString Connection string
+     * @param user Database user
+     * @param password Database password
+     * @throws SQLException Exception thrown on connection error
+     */
     public DataHandler(String connectionString, String user, String password) throws SQLException {
         try {
             connection = DriverManager.getConnection(connectionString, user, password);
@@ -23,6 +36,11 @@ public class DataHandler {
         }
     }
 
+    /**
+     * Preare in statement argument, e.g: [1, 4, 5] -> "(1, 4, 5)"
+     * @param values Values to use
+     * @return In statement argument
+     */
     protected String prepareInStmt(ArrayList<Integer> values) {
         String inStmt = "( ";
 
@@ -38,6 +56,13 @@ public class DataHandler {
         return inStmt;
     }
 
+    /**
+     * Get all experiment states
+     *
+     * @param experimentId Experiment identifier
+     * @param methods Methods identifiers
+     * @return Matching PAD states
+     */
     public ArrayList<PADState> fetchAll(int experimentId, ArrayList<Integer> methods) {
         ArrayList<PADState> states = new ArrayList<PADState>();
 
@@ -85,6 +110,13 @@ public class DataHandler {
         return states;
     }
 
+    /**
+     * Insert a new PAD value
+     *
+     * @param data Package
+     * @param resultSetId
+     * @return true if succeeded, false otherwise
+     */
     public boolean insertPadValue(PADPackage data, int resultSetId) {
         try {
             PreparedStatement stmt;
@@ -107,6 +139,9 @@ public class DataHandler {
         return true;
     }
 
+    /**
+     * @return Id of last inserted row
+     */
     private int getLastInsertedId() {
         ResultSet results = null;
 
@@ -129,6 +164,13 @@ public class DataHandler {
         return -1;
     }
 
+    /**
+     * Create a new session
+     *
+     * @param experimentId Experiment id
+     * @param methodId Method id
+     * @return Created session id
+     */
     public int createSession(int experimentId, int methodId) {
         try {
             PreparedStatement stmt;
@@ -145,6 +187,12 @@ public class DataHandler {
         return -1;
     }
 
+    /**
+     * Create a new result set for session
+     *
+     * @param sessionId Session id
+     * @return Created result set id
+     */
     public int createResultSet(int sessionId) {
         try {
             PreparedStatement stmt;

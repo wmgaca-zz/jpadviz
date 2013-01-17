@@ -12,14 +12,41 @@ import java.sql.SQLException;
 
 import static lib.utils.Logging.log;
 
+/**
+ * PAD server
+ */
 public class PadServer {
 
+    /**
+     * App working dir
+     */
     public static String workingDir = System.getProperty("user.dir");
+
+    /**
+     * Config file
+     */
     public static File  serverConfigFile = new File(PadServer.workingDir, "config/server-settings.xml");
+
+    /**
+     * Config object
+     */
     public static ServerConfig config = new ServerConfig(PadServer.serverConfigFile);
+
+    /**
+     * Active connections count
+     */
     public static int connections = 0;
+
+    /**
+     * DB handler
+     */
     public static DataHandler db = null;
 
+    /**
+     * Entry point
+     *
+     * @param args
+     */
     public static void main(String[] args) {
         // Initialize application: read configuration files, set up things
         PadServer.init();
@@ -28,6 +55,9 @@ public class PadServer {
         PadServer.run();
     }
 
+    /**
+     * Set up the server
+     */
     public static void init() {
         log("Initializing...");
 
@@ -46,6 +76,9 @@ public class PadServer {
         }
     }
 
+    /**
+     * Server's logic
+     */
     public static void run() {
         ServerSocket listener = null;
 

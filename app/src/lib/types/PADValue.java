@@ -4,6 +4,9 @@ import lib.utils.Utils;
 
 import java.io.Serializable;
 
+/**
+ * Reresents a singele state's value.
+ */
 public class PADValue implements Serializable {
 
     /**
@@ -22,11 +25,9 @@ public class PADValue implements Serializable {
     public long timestamp = 0;
 
     /**
-     * Constructor.
-     *
-     * @param value
-     * @param certainty
-     * @param timestamp
+     * @param value Metric's value
+     * @param certainty Metric's certainty
+     * @param timestamp Metric's timestamp
      */
     public PADValue(float value, float certainty, long timestamp) {
         this.value = value;
@@ -34,6 +35,12 @@ public class PADValue implements Serializable {
         this.timestamp = timestamp;
     }
 
+    /**
+     * Create a single metric's value with given value and current time
+     *
+     * @param value Metric's value
+     * @param certainty Metric's certainty
+     */
     public PADValue(float value, float certainty) {
         this(value, certainty, System.currentTimeMillis());
     }
@@ -104,6 +111,9 @@ public class PADValue implements Serializable {
         this.timestamp = timestamp;
     }
 
+    /**
+     * @return Value's string representation.
+     */
     @Override
     public String toString() {
         return String.format("<PadValue(%s,%s)", value, certainty);

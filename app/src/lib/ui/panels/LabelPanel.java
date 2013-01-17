@@ -8,10 +8,24 @@ import lib.utils.Utils;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
+/**
+ * Online, single-channel label widget
+ */
 public class LabelPanel extends Panel {
 
+    /**
+     * Widget's instance
+     */
     protected static LabelPanel instance = null;
 
+    /**
+     * Get windget's instance (there should be only one)
+     *
+     * @param width Width
+     * @param height Height
+     * @param labelConfig Label config instance
+     * @return Widget instance
+     */
     public static LabelPanel getInstance(int width, int height, LabelConfig labelConfig) {
         if (null == instance) {
             instance = new LabelPanel(width, height, labelConfig);
@@ -20,8 +34,16 @@ public class LabelPanel extends Panel {
         return instance;
     }
 
+    /**
+     * Label config object
+     */
     protected LabelConfig labelConfig;
 
+    /**
+     * @param width Width
+     * @param height Height
+     * @param labelConfig Label config
+     */
     public LabelPanel(int width, int height, LabelConfig labelConfig) {
         super(PAD.Type.PAD, width, height);
 
@@ -29,6 +51,11 @@ public class LabelPanel extends Panel {
         this.margin.right = 50;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param g2d Graphics object to be drawn
+     */
     @Override
     public void customPaintComponent(Graphics2D g2d) {
         // Draw bottom Y line

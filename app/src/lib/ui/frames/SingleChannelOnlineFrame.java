@@ -11,20 +11,34 @@ import java.awt.*;
 
 import static lib.utils.Logging.log;
 
+/**
+ * Frame for online single-channel mode
+ */
 public class SingleChannelOnlineFrame extends Frame {
 
+    /**
+     * Possible views
+     */
     public enum Layout {
         FULL,
         LABEL,
         RADAR
     }
 
+    /**
+     * Current view
+     */
     protected Layout currentLayout;
 
     public SingleChannelOnlineFrame(LabelConfig labelConfig) {
         super(labelConfig);
     }
 
+    /**
+     * Set view
+     *
+     * @param layout View to be set.
+     */
     protected void setLayout(Layout layout) {
         if (layout == currentLayout) {
             return;
@@ -45,6 +59,9 @@ public class SingleChannelOnlineFrame extends Frame {
         currentLayout = layout;
     }
 
+    /**
+     * Set minimized view: radar only
+     */
     protected void setMinimalRadarLayout() {
         setSize(new Dimension(200, 200));
 
@@ -56,6 +73,9 @@ public class SingleChannelOnlineFrame extends Frame {
         addToContainer(panelContainer, topContainer);
     }
 
+    /**
+     * Set minimized view: labels only
+     */
     protected void setMinimalLabelLayout() {
         setSize(new Dimension(1000, 200));
 
@@ -106,6 +126,9 @@ public class SingleChannelOnlineFrame extends Frame {
         addToContainer(panelContainer, middleContainer);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void initPanelContainer() {
         super.initPanelContainer();
@@ -113,6 +136,9 @@ public class SingleChannelOnlineFrame extends Frame {
         setLayout(Layout.FULL);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void handleMenuAction(MainMenu.Action action) {
         switch (action) {

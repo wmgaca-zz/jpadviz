@@ -12,16 +12,39 @@ import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * Base for all application's frames.
+ */
 public abstract class Frame extends JFrame {
 
+    /**
+     * Default frame width. In pixels.
+     */
     public static int DEFAULT_WIDTH = 800;
+
+    /**
+     * Default frame height. In pixels.
+     */
     public static int DEFAULT_HEIGHT = 800;
 
+    /**
+     * Label config instance.
+     */
     protected LabelConfig labelConfig;
+
+    /**
+     * Main panel container.
+     */
     protected JPanel panelContainer;
 
+    /**
+     * Frame's panels.
+     */
     protected ArrayList<Panel> panels = new ArrayList<Panel>();
 
+    /**
+     * Always on top flag.
+     */
     protected boolean alwaysOnTop = false;
 
     public Frame(LabelConfig labelConfig) {
@@ -45,6 +68,9 @@ public abstract class Frame extends JFrame {
         pack();
     }
 
+    /**
+     * @return Label config.
+     */
     public LabelConfig getLabelConfig() {
         return labelConfig;
     }
@@ -53,11 +79,12 @@ public abstract class Frame extends JFrame {
         labelConfig = value;
     }
 
-    public final void feed(PADState state) {
-        log("Frame.feed()");
-        panelContainer.repaint();
-    }
-
+    /**
+     * Add components to a panel.
+     *
+     * @param container Component container
+     * @param components Components to add
+     */
     protected void addToContainer(JPanel container, Component... components) {
         for (Component component : components) {
             container.add(component);
@@ -70,17 +97,9 @@ public abstract class Frame extends JFrame {
         }
     }
 
-    /*
-    protected void addToContainer(JPanel container, Component panel) {
-        container.add(panel);
-
-        if (panel instanceof Panel) {
-            if (!panels.contains((Panel)panel)) {
-                panels.add((Panel)panel);
-            }
-        }
-    } //*/
-
+    /**
+     * Init frame
+     */
     protected void init() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
@@ -89,16 +108,30 @@ public abstract class Frame extends JFrame {
         setJMenuBar(MainMenu.getInstance(this));
     }
 
+    /**
+     * Handle menu actions, invoked by the menu object.
+     *
+     * @param action
+     */
     public abstract void handleMenuAction(MainMenu.Action action);
 
+    /**
+     * Switch the "stay on top" option.
+     */
     public void toggleStayOnTop() {
         setAlwaysOnTop(!isAlwaysOnTop());
     }
 
+    /**
+     * Remove all components.
+     */
     protected void clearLayout() {
         panelContainer.removeAll();
     }
 
+    /**
+     * Init main panel container.
+     */
     protected void initPanelContainer() {
         // Main container
         panelContainer = new JPanel();
@@ -106,7 +139,5 @@ public abstract class Frame extends JFrame {
         panelContainer.setBackground(Palette.white);
         panelContainer.setLayout(new BoxLayout(panelContainer, BoxLayout.Y_AXIS));
         panelContainer.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-
-        //setLayout(Layout.FULL);
     }
 }

@@ -6,12 +6,20 @@ import java.awt.*;
 import java.util.ArrayList;
 import static lib.utils.Logging.log;
 
+/**
+ * Draw current values for off-line, multiple-channel mode
+ */
 public class MultipleValuePanel extends lib.ui.panels.base.Panel {
 
     public MultipleValuePanel(PAD.Type type, int width, int height) {
         super(type, width, height);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param g2d Graphics object to be drawn
+     */
     @Override
     public void customPaintComponent(Graphics2D g2d) {
         ArrayList<PADDataHandler> list = PADDataHandlerContainer.getInstance().getList();

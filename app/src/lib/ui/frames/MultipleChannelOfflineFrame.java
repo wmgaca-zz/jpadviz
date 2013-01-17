@@ -14,21 +14,42 @@ import java.awt.*;
 
 import static lib.utils.Logging.log;
 
+/**
+ * Frame for offline multiple channel mode.
+ */
 public class MultipleChannelOfflineFrame extends Frame {
 
+    /**
+     * Default zoom
+     */
     public static int DEFAULT_ZOOM = 10;
+
+    /**
+     * Default window
+     */
     public static int DEFAULT_WINDOW = 50;
 
+    /**
+     * Possible views
+     */
     public enum Layout {
         FULL
     }
 
+    /**
+     * Current view
+     */
     protected Layout currentLayout;
 
     public MultipleChannelOfflineFrame(LabelConfig labelConfig) {
         super(labelConfig);
     }
 
+    /**
+     * Set view
+     *
+     * @param layout View to be set
+     */
     protected void setLayout(Layout layout) {
         if (layout == currentLayout) {
             return;
@@ -45,6 +66,9 @@ public class MultipleChannelOfflineFrame extends Frame {
         currentLayout = layout;
     }
 
+    /**
+     * Set view to full layout (all panels present).
+     */
     protected void setFullLayout() {
         setSize(new Dimension(1000, 800));
 
@@ -90,46 +114,6 @@ public class MultipleChannelOfflineFrame extends Frame {
                 zoomLabel, currentZoomSlider,
                 windowLabel, currentWindowSlider);
 
-        /*
-
-        final JTextArea timeStartTextArea = new JTextArea(String.valueOf(PADDataHandler.getInstance().getCurrentStartTime()));
-        timeStartTextArea.setSize(new Dimension(100, 20));
-
-        timeStartTextArea.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent focusEvent) {
-
-            }
-
-            @Override
-            public void focusLost(FocusEvent focusEvent) {
-                log("value: %s", timeStartTextArea.getText());
-            }
-        });
-
-        timeStartTextArea.addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent keyEvent) {
-                log("Typed");
-            }
-
-            @Override
-            public void keyPressed(KeyEvent keyEvent) {
-                log("Pressed");
-            }
-
-            @Override
-            public void keyReleased(KeyEvent keyEvent) {
-                log("Released");
-            }
-        });
-
-        JTextArea timeEndTextArea = new JTextArea(String.valueOf(PADDataHandler.getInstance().getCurrentEndTime()));
-        timeEndTextArea.setSize(new Dimension(100, 20));
-
-        JLabel timeSpanLabel = new JLabel(String.format("%s - %s", PADDataHandler.getInstance().getCurrentStartTime(), PADDataHandler.getInstance().getCurrentEndTime()));
-        addToContainer(controlsContainer, timeStartTextArea, timeEndTextArea);
-        //*/
 
         // Top: LabelPanel
         JPanel topContainer = new JPanel();
@@ -168,6 +152,9 @@ public class MultipleChannelOfflineFrame extends Frame {
                                        middleContainer);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void initPanelContainer() {
         super.initPanelContainer();
@@ -175,6 +162,11 @@ public class MultipleChannelOfflineFrame extends Frame {
         setLayout(Layout.FULL);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param action Menu action
+     */
     @Override
     public void handleMenuAction(MainMenu.Action action) {
         switch (action) {

@@ -5,12 +5,20 @@ import lib.types.*;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
+/**
+ * Draw single state's values
+ */
 public class StatePanel extends lib.ui.panels.base.Panel {
 
     public StatePanel(int width, int height) {
         super(PAD.Type.PAD, width, height);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param g2d Graphics object to be drawn
+     */
     @Override
     public void customPaintComponent(Graphics2D g2d) {
         PADState current = data.getLastState();
