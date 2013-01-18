@@ -3,12 +3,7 @@ package lib.ui.panels;
 import lib.types.*;
 
 import java.awt.*;
-import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
-
-import static lib.utils.Logging.log;
 
 /**
  * Widget shows used method and assigned colors.
