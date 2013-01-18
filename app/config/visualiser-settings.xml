@@ -4,9 +4,6 @@
           load data: any other value -->
     <mode>load</mode>
 
-    <!-- compact: "min"
-         full window: any other value -->
-    <layout></layout>
 
     <!-- TODO -->
     <session id="2" channels="1, 5" />
