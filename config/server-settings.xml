@@ -1,5 +1,5 @@
-<settings>
-    <host>localhost</host>
+<settings>	
+	<host>localhost</host>
     <port>8081</port>
     <db_string>jdbc:mysql://localhost/pad</db_string>
     <db_user>berta</db_user>

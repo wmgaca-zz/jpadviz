@@ -125,7 +125,6 @@ public class PADDataHandlerContainer {
      * @param state PAD state
      */
     public void feed(PADState state) {
-        log("feeding container, method: %s", state.getMethod());
         if (isRealTime) {
             if (list.isEmpty()) {
                 list.add(new PADDataHandler(isRealTime));

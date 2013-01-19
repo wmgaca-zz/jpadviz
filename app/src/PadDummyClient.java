@@ -1,3 +1,4 @@
+import lib.net.packages.ExperimentInfoPackage;
 import lib.utils.Utils;
 import lib.config.ServerConfig;
 import lib.types.Client;
@@ -17,15 +18,23 @@ import static lib.utils.Logging.log;
  * Sample data source implementation
  */
 public class PadDummyClient {
+
     public static ServerConfig config = PadServer.config;
+
+    public static void main(String[] args) {
+        try {
+            run();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Entry point
      *
-     * @param args
      * @throws InterruptedException
      */
-    public static void main(String[] args) throws InterruptedException {
+    public static void run() throws InterruptedException {
         String host = PadDummyClient.config.getHost();
         int port = PadDummyClient.config.getPort();
 
@@ -43,6 +52,8 @@ public class PadDummyClient {
 
             out.writeObject(new HandshakePackage(Client.DATA_SOURCE));
 
+            out.writeObject(new ExperimentInfoPackage("Some experiment", "Some method"));
+
             while (true) {
                 out.writeObject(PADPackage.getRandom());
                 Thread.sleep(Utils.getRandomGenerator().nextInt(2500) + 500);
@@ -50,12 +61,12 @@ public class PadDummyClient {
 
         } catch (UnknownHostException error) {
             Utils.exitOnException(
-                    error,
+                    null,
                     String.format("Unknown host: %s", host));
         } catch (IOException error) {
             Utils.exitOnException(
-                    error,
-                    String.format("No I/O"));
+                    null,
+                    String.format("No I/O. Is the server running?"));
         } finally {
             if (null != out) {
                 try {

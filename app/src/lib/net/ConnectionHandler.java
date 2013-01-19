@@ -174,13 +174,26 @@ public class ConnectionHandler implements Runnable {
     public void listen() {
         Package data;
 
-        // Create new session
-        int sessionId = db.createSession(1, 1);
-
-        // Create result set
-        int resultSetId = db.createResultSet(sessionId);
 
         try {
+
+            data = (Package)input.readObject();
+
+            if (!(data instanceof ExperimentInfoPackage)) {
+                log("Incorrect data, expecting experiment info package...");
+                endConnection();
+                return;
+            }
+
+            int experimentId = db.getExperimentIdByName(((ExperimentInfoPackage) data).getExperimentName());
+            int methodId = db.getMethodIdByName(((ExperimentInfoPackage) data).getMethodName());
+
+            // Create new session
+            int sessionId = db.createSession(experimentId, methodId);
+
+            // Create result set
+            int resultSetId = db.createResultSet(sessionId);
+
             while ((data = (Package) input.readObject()) != null) {
                 log("Package received: %s, %s", name, data);
 

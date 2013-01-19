@@ -78,9 +78,7 @@ public class PADDataHandler {
      * @param state PAD state
      */
     public void feed(PADState state) {
-
         synchronized (values) {
-            log("FEED: %s", values.size());
             values.add(state);
         }
     }

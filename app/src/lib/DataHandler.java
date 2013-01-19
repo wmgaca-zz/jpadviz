@@ -30,8 +30,6 @@ public class DataHandler {
         try {
             connection = DriverManager.getConnection(connectionString, user, password);
         } catch (SQLException error) {
-            log("Cannot connect.");
-            error.printStackTrace();
             throw error;
         }
     }
@@ -66,9 +64,7 @@ public class DataHandler {
     public ArrayList<PADState> fetchAll(int experimentId, ArrayList<Integer> methods) {
         ArrayList<PADState> states = new ArrayList<PADState>();
 
-        log("experimentId = %s", experimentId);
-        log("methods = %s", methods);
-        log("prepared = %s", prepareInStmt(methods));
+        log("experimentId = %s, methods = %s", experimentId, methods);
 
         // 1. Get sessions
         ArrayList<Integer> sessionIds = new ArrayList<Integer>();
@@ -83,7 +79,6 @@ public class DataHandler {
         }
 
         log("sessionIds = %s", sessionIds);
-        log("prepared: %s", prepareInStmt(sessionIds));
 
         query = String.format(
             "SELECT p, a, d, cp, ca, cd, timestamp, method_id FROM pad_value " +
@@ -180,7 +175,37 @@ public class DataHandler {
             stmt.executeUpdate();
             return getLastInsertedId();
         }  catch (SQLException e) {
-            log("Cannot insert PadValue record");
+            log("Cannot insert record");
+            e.printStackTrace();
+        }
+
+        return -1;
+    }
+
+    public int createExperiment(String name) {
+        try {
+            PreparedStatement stmt;
+            stmt = connection.prepareStatement("INSERT INTO experiment(name) VALUES(?)");
+            stmt.setString(1, name);
+            stmt.executeUpdate();
+            return getLastInsertedId();
+        }  catch (SQLException e) {
+            log("Cannot insert record");
+            e.printStackTrace();
+        }
+
+        return -1;
+    }
+
+    public int createMethod(String name) {
+        try {
+            PreparedStatement stmt;
+            stmt = connection.prepareStatement("INSERT INTO method(name) VALUES(?)");
+            stmt.setString(1, name);
+            stmt.executeUpdate();
+            return getLastInsertedId();
+        }  catch (SQLException e) {
+            log("Cannot insert record");
             e.printStackTrace();
         }
 
@@ -206,5 +231,54 @@ public class DataHandler {
         }
 
         return -1;
+    }
+
+    public Integer getExperimentIdByName(String experimentName) {
+        // Get Id if exists
+        String query = String.format("SELECT id FROM experiment WHERE name = '%s'", experimentName);
+        log(query);
+        try {
+            ResultSet results = connection.createStatement().executeQuery(query);
+
+            if (results.next()) {
+                return results.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        // Create if not
+        int experimentId = createExperiment(experimentName);
+        if (-1 == experimentId) {
+            return null;
+        }
+
+        return experimentId;
+
+    }
+
+    public Integer getMethodIdByName(String methodName) {
+        // Get Id if exists
+        String query = String.format("SELECT id FROM method WHERE name = '%s'", methodName);
+        log(query);
+        try {
+            ResultSet results = connection.createStatement().executeQuery(query);
+
+            if (results.next()) {
+                return results.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        // Create if not
+        int methodId = createMethod(methodName);
+        if (-1 == methodId) {
+            return null;
+        }
+
+        return methodId;
     }
 }

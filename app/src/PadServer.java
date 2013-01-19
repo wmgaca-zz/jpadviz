@@ -67,13 +67,15 @@ public class PadServer {
             log("Server config file validation: OK.");
         }
 
+        log("Establishing connection to the database...");
         try {
             db = new DataHandler(PadServer.config.getDBConnectionString(),
                                  PadServer.config.getDBUser(),
                                  PadServer.config.getDBPassword());
         } catch (SQLException e) {
-            Utils.exitOnException(e, "Cannot connect to database.");
+            Utils.exitOnException(null, String.format("Cannot connect to database: %s", PadServer.config.getDBConnectionString()));
         }
+        log("Connected.");
     }
 
     /**
@@ -86,11 +88,11 @@ public class PadServer {
             listener = new ServerSocket(PadServer.config.getPort());
         } catch (BindException error) {
             Utils.exitOnException(
-                    error,
+                    null,
                     String.format("Could not listen on port %s", PadServer.config.getPort()));
         } catch (IOException error) {
             Utils.exitOnException(
-                    error,
+                    null,
                     String.format("Could not listen on port %s", PadServer.config.getPort()));
         }
 

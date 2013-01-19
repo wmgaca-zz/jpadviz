@@ -2,7 +2,7 @@
 
     <!-- real time: "auto"
           load data: any other value -->
-    <mode>load</mode>
+    <mode>auto</mode>
 
 
     <!-- TODO -->

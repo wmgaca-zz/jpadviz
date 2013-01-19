@@ -12,6 +12,7 @@ public abstract class Package implements Serializable {
      */
     public static enum Type {
         HANDSHAKE,
+        EXPERIMENT_INFO,
         DATA,
         PAD,
         END
